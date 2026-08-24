@@ -258,6 +258,22 @@ Copy this block for every meaningful work unit:
 **Known limitation**
 - No accepted real-evidence delta is claimed for this final deployment. A prior deployment had undetermined real-evidence attempts; the final deployment proves the stricter evidence-fetch/digest fail-closed path without fabricating an acceptance result.
 
+### 2026-08-24 14:29 +01:00 — Canonical final enumeration release
+
+**Canonical source and deployment**
+- Commit `04fc29512d3a4edf13c24e3764087cf3a8592be1` added bounded `get_layer_clusters` and removed the fabricated layer-version strip in favor of chain-derived feature versions.
+- StudioNet contract: `0x303f9cBee77a1C84B4A8EF39399E793202FbcEe6`.
+- Deployment transaction: `0x576525d6d6e923359b3400faac5f98b7994e707f93759df126bb6e49b92a4f1d` — accepted with GenVM success.
+- Source SHA-256: `F0EF7D56DA8D600DDCB388CFCC913F53F865D61EC68F014B9B866767D65F6D3D`.
+
+**Final lifecycle readback**
+- Layer `1`, feature `1`, and cluster `1` were created on the final address.
+- Cluster `1` finalized status `6` / `INSUFFICIENT_EVIDENCE` with `Evidence UNAVAILABLE or digest verification failed`.
+- Feature `1` remained `status=OPEN`, version `1`; history returned `[]`; `get_layer_clusters(1,0,32)` returned the authoritative cluster.
+
+**Frontend**
+- Vercel deployment `dpl_AuyPYX3ouMKijYKn3R871cQi8Ho2` is Ready at `https://web-azglr9omk-bibidees-projects.vercel.app` and is configured with the final address.
+
 ### 2026-08-23 19:10 +01:00 — Blueprint pack created
 
 **Goal**
