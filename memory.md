@@ -24,7 +24,7 @@ a bounded canonical delta to a geographic feature: open/closed, name, access, di
 
 **Phase:** StudioNet release candidate
 **Code status:** Implemented; current contract source commit is `0f0829daff01114f5f4531bcaa9c020f1cf1de34`.
-**StudioNet contract:** `0xd0C073A97D80087439920D2bEe6D5580707E38e2` (deployment `0x9c1ce43a92e901fab58e0eaa29794c0d7bd80e9ccf3f93fab457296588f72186`).
+**StudioNet contract:** `0x93F35446B739874E2cf154E58Bae4fC803E3017D` (deployment `0xf1e27fe32a9165e70dbe4a26c9e082cb1b5df94f2ed4ad3798bc6f74a99f6665`).
 **Live frontend:** https://atlasmerge.vercel.app (Vercel deployment `dpl_8vgBkeMgrxJraFQ9MsyaNGksc2zY`).
 **Last durable update:** 2026-08-24
 

@@ -33,9 +33,6 @@ jobs:
         run: npm run build
       - name: Contract static validation
         run: python -m pytest tests/direct/test_contract_source.py
-      # genlayer-test 0.29.2 currently requests a deleted GenVM release asset
-      # (HTTP 404). Keep the behavioral suite visible and non-blocking until the
-      # upstream runner publishes a compatible artifact; do not hide its result.
-      - name: Contract behavioral Direct Mode (upstream runner currently broken)
-        continue-on-error: true
+      # This is deliberately blocking: a green workflow must mean the suite ran.
+      - name: Contract behavioral Direct Mode
         run: python -m pytest tests/direct/test_contract_behavior.py

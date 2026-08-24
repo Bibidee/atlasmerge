@@ -1,5 +1,13 @@
 # AtlasMerge — Handoff Log
 
+## Current canonical deployment
+
+- Contract: `0x93F35446B739874E2cf154E58Bae4fC803E3017D`.
+- Deployment tx: `0xf1e27fe32a9165e70dbe4a26c9e082cb1b5df94f2ed4ad3798bc6f74a99f6665` (majority agreement; leader GenVM success).
+- Contract source commit: `fddd0a94bcfe48eb5347aa79e2cb94d4ceadcd8f`; SHA-256 `A1D543883069465F2434DE084C3ACB2BB6BD40F9EC076628B8C998BA9EC84A7D`.
+- Production app: `https://atlasmerge.vercel.app` is aliased to `dpl_4y7ArZ198k1LoECq3fGunmisRAab` and configured for that address.
+- Truthful status: unseeded. Browser wallet lifecycle, positive acceptance, VecDB proof, and final negative proofs remain unproven.
+
 > **Mandatory living log.** `AGENTS.md` requires an agent to append here immediately after every meaningful work unit, before starting the next one. This is the operational continuity file; it must describe what actually happened, not what was intended.
 
 ## Current checkpoint

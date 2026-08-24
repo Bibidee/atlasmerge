@@ -6,7 +6,7 @@ AtlasMerge is a user-facing GenLayer consensus layer for bounded changes to crow
 
 - App: https://atlasmerge.vercel.app
 - Network: GenLayer StudioNet (chain ID 61999)
-- Current production contract: `0xd0C073A97D80087439920D2bEe6D5580707E38e2` ([StudioNet Explorer](https://explorer-studio.genlayer.com/address/0xd0C073A97D80087439920D2bEe6D5580707E38e2)).
+- Current production contract: `0x93F35446B739874E2cf154E58Bae4fC803E3017D` ([StudioNet Explorer](https://explorer-studio.genlayer.com/address/0x93F35446B739874E2cf154E58Bae4fC803E3017D)).
 
 ## Evidence and consensus
 
