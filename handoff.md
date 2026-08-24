@@ -274,6 +274,12 @@ Copy this block for every meaningful work unit:
 **Frontend**
 - Vercel deployment `dpl_AuyPYX3ouMKijYKn3R871cQi8Ho2` is Ready at `https://web-azglr9omk-bibidees-projects.vercel.app` and is configured with the final address.
 
+### 2026-08-24 — Release-blocking enumeration defect found
+
+- A direct `genlayer-js` read against `0x303f9cBee77a1C84B4A8EF39399E793202FbcEe6` established that the deployed `get_clusters` view raises `NameError: layer_id is not defined`.
+- The public cluster index therefore showed an empty state; this was a real contract defect, not missing data or a frontend rendering issue.
+- The source now corrects `get_clusters` to enumerate `cluster_count`, and makes `get_layer_clusters` use its layer-scoped count. It has passed the available source-invariant suite (4 tests), Vitest (3 tests), TypeScript, lint, and production build locally. Redeployment and a fresh live lifecycle remain required before this source can be called canonical.
+
 ### 2026-08-23 19:10 +01:00 — Blueprint pack created
 
 **Goal**

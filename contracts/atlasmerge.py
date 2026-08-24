@@ -289,15 +289,15 @@ class AtlasMerge(gl.Contract):
     @gl.public.view
     def get_clusters(self, offset: u256, limit: u256) -> list[Cluster]:
         if limit>32: raise Exception("limit must be at most 32")
-        if layer_id not in self.layer_cluster_counts: return []
-        out=[]; end=min(self.layer_cluster_counts[layer_id], offset+limit)
+        out=[]; end=min(self.cluster_count, offset+limit)
         for i in range(offset, end): out.append(self.clusters[i+1])
         return out
     @gl.public.view
     def get_layer_clusters(self, layer_id: u256, offset: u256, limit: u256) -> list[Cluster]:
         self._layer(layer_id)
         if limit>32: raise Exception("limit must be at most 32")
-        out=[]; end=min(self.cluster_count, offset+limit)
+        if layer_id not in self.layer_cluster_counts: return []
+        out=[]; end=min(self.layer_cluster_counts[layer_id], offset+limit)
         for i in range(offset, end): out.append(self.clusters[self.layer_cluster_ids[str(layer_id)+":"+str(i)]])
         return out
     @gl.public.view
