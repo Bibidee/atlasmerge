@@ -64,6 +64,7 @@ class AtlasMerge(gl.Contract):
     feature_history_counts: TreeMap[u256, u256]
     layer_feature_ids: TreeMap[str, u256]
     layer_cluster_ids: TreeMap[str, u256]
+    layer_cluster_counts: TreeMap[u256, u256]
     feature_cluster_ids: TreeMap[str, u256]
     feature_cluster_counts: TreeMap[u256, u256]
     feature_keys: TreeMap[str, u256]
@@ -185,7 +186,8 @@ class AtlasMerge(gl.Contract):
         proposed_value=self._validate_attribute_value(proposed_attribute, proposed_value); self._validate_https_url(report_bundle_url); self._validate_digest(bundle_digest); self._clean_text(coarse_geohash, MAX_GEOHASH, "coarse geohash")
         self.cluster_count += 1; cid=self.cluster_count
         self.clusters[cid]=Cluster(gl.message.sender_address, layer_id, feature_id, proposed_attribute, proposed_value, report_bundle_url, bundle_digest, coarse_geohash, feature.version, STATUS_PENDING, "[]", "")
-        self.layer_cluster_ids[str(layer_id)+":"+str(self.cluster_count-1)]=cid
+        layer_prior=self.layer_cluster_counts[layer_id] if layer_id in self.layer_cluster_counts else 0
+        self.layer_cluster_ids[str(layer_id)+":"+str(layer_prior)]=cid; self.layer_cluster_counts[layer_id]=layer_prior+1
         prior=self.feature_cluster_counts[feature_id] if feature_id in self.feature_cluster_counts else 0
         self.feature_cluster_ids[str(feature_id)+":"+str(prior)]=cid
         self.feature_cluster_counts[feature_id]=prior+1
@@ -287,8 +289,16 @@ class AtlasMerge(gl.Contract):
     @gl.public.view
     def get_clusters(self, offset: u256, limit: u256) -> list[Cluster]:
         if limit>32: raise Exception("limit must be at most 32")
-        out=[]; end=min(self.cluster_count, offset+limit)
+        if layer_id not in self.layer_cluster_counts: return []
+        out=[]; end=min(self.layer_cluster_counts[layer_id], offset+limit)
         for i in range(offset, end): out.append(self.clusters[i+1])
+        return out
+    @gl.public.view
+    def get_layer_clusters(self, layer_id: u256, offset: u256, limit: u256) -> list[Cluster]:
+        self._layer(layer_id)
+        if limit>32: raise Exception("limit must be at most 32")
+        out=[]; end=min(self.cluster_count, offset+limit)
+        for i in range(offset, end): out.append(self.clusters[self.layer_cluster_ids[str(layer_id)+":"+str(i)]])
         return out
     @gl.public.view
     def get_feature_clusters(self, feature_id: u256, offset: u256, limit: u256) -> list[Cluster]:

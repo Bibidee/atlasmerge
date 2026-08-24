@@ -1,1 +1,7 @@
-import {Shell} from "../../../../components/shell";import {Unavailable} from "../../../../components/live";export default function Versions(){return <Shell><section className="table-sheet versions"><p className="eyebrow">LAYER VERSION EXPLORER</p><h1>Survey versions</h1><div className="version-strip"><b>v1</b><b>v2</b><b>v3</b><b>v4</b></div><label>Filter accepted ledger<input placeholder="Geohash or attribute"/></label><Unavailable message="Layer-wide enumeration is not a local cache. Query an authoritative deployed layer through its stable view methods."/></section></Shell>}
+"use client";
+import {useEffect,useState} from "react";
+import {Shell} from "../../../../components/shell";
+import {Unavailable} from "../../../../components/live";
+import {getLayerFeatures} from "../../../../lib/genlayer/data-source";
+import type {Feature} from "../../../../lib/genlayer/types";
+export default function Versions({params}:{params:Promise<{id:string}>}){const [id,setId]=useState(""),[features,setFeatures]=useState<Feature[]>([]),[error,setError]=useState("");useEffect(()=>{params.then(async p=>{setId(p.id);try{setFeatures(await getLayerFeatures(p.id))}catch(e){setError(e instanceof Error?e.message:"Unavailable")}})},[params]);return <Shell><section className="table-sheet versions"><p className="eyebrow">AUTHORITATIVE LAYER LEDGER</p><h1>Layer {id||"…"}</h1>{error?<Unavailable message={error}/>:features.length?<div>{features.map((feature,index)=><article key={feature.feature_key}><a href={`/features/${index+1}`}>{feature.feature_key}</a><p>Chain version {feature.version} · {feature.active?"active":"inactive"}</p><code>{feature.attrs_json}</code></article>)}</div>:<p>No registered features for this layer.</p>}</section></Shell>}

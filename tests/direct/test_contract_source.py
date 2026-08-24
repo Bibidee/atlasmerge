@@ -32,6 +32,7 @@ def test_evidence_digest_memory_and_enumeration_hardening_are_present():
     assert "def get_layers(" in code
     assert "def get_layer_features(" in code
     assert "def get_feature_clusters(" in code
+    assert "def get_layer_clusters(" in code
     assert "def get_clusters(" in code
     assert "limit must be at most 32" in code
 
