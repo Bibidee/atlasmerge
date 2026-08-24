@@ -228,6 +228,36 @@ Copy this block for every meaningful work unit:
 **Next exact action**
 - No required work remains. Optionally retry adjudication of pending cluster `1` later when validator model decisions converge.
 
+### 2026-08-24 13:25 +01:00 — Final hardening redeployment and lifecycle
+
+**Canonical source**
+- Commit: `8e738018779d30c1060c413494c835351229b3d0`.
+- Contract SHA-256: `063B4047DA113B4CF01FA089C706398C77DA615CB6BAD469E72E944CFD926EE5`.
+- StudioNet deployment: `0x6dCc3BA35dA29E7ffc79DDD4f37581294EBE29FC`.
+- Deployment transaction: `0xe83fef80e33b1c93a4b01eedb78122152dead5141138d5d7c3ccd865b1b65f89` — GenVM success and majority agreement.
+
+**Hardening implemented**
+- Validators fetch bounded HTTPS evidence with `gl.nondet.web.get`, verify exact UTF-8 text against `sha256:<64 lowercase hex>`, and frame public content as untrusted data.
+- Empty, unavailable, oversized, malformed, or digest-mismatched evidence is fail-closed and non-mutating.
+- Precedent retrieval is bounded and layer/geohash scoped before consensus; returned memory IDs must be actual eligible candidates.
+- Attribute values use deterministic normalization and supported vocabularies.
+- Bounded contract enumeration and the official `genlayer-js` client now drive frontend reads/writes.
+
+**Final-contract lifecycle proof**
+- Create layer: `0xe76eee72d1cb5097cfe7f40bf7540ada89f41e0cb14286c4ee07322bd6002787`.
+- Register feature: `0x58133d6957ea58f82f651cc962b2ebe15141f3eef74147a5ab8e5871cd0505cc`.
+- Submit cluster: `0x6d5b2a1a0f621b3f91763b7b68f42e20c0cf577139de1f8da9e1228704444e3a`.
+- Adjudicate: `0x7425c3dbe660b5265efeb2173f5db8c71a62a898ee58bf6f8e9f5d97fdd8548f` — majority agreed, GenVM success, persisted status `6` / `INSUFFICIENT_EVIDENCE` and rationale `Evidence UNAVAILABLE or digest verification failed`.
+- Re-reads verified the feature stayed `status=OPEN`, version `1`; history `[]`; semantic memory `[]`; cluster enumeration returned the authoritative record.
+
+**Verification and frontend**
+- Direct Python 3.12 suite: 4 passed. Frontend Vitest: 3 passed. Typecheck, lint, and production build passed.
+- Final frontend deployment: `dpl_Bm2woRMubjGRwaDJryrDtVCNFCe6`, immutable URL `https://web-cfheu2dau-bibidees-projects.vercel.app`.
+- Canonical URL `https://atlasmerge.vercel.app` now points to that deployment and is configured with the final contract address.
+
+**Known limitation**
+- No accepted real-evidence delta is claimed for this final deployment. A prior deployment had undetermined real-evidence attempts; the final deployment proves the stricter evidence-fetch/digest fail-closed path without fabricating an acceptance result.
+
 ### 2026-08-23 19:10 +01:00 — Blueprint pack created
 
 **Goal**
