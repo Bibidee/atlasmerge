@@ -62,7 +62,7 @@ Do the bounded public reports/evidence in this cluster support the proposed cano
 - Writes: injected EIP-1193 wallet only
 - Backend signer: forbidden
 - Vector model baseline: `all-MiniLM-L6-v2` / 384 dimensions
-- Similarity semantics: retrieval only
+- Similarity semantics: retrieval only; exact geohash cells (standard alphabet, precision 5–12) are the deterministic locality boundary.
 - Live data: no silent fixture fallback
 - Finality: wait for FINALIZED, then inspect GenVM execution before success
 
@@ -115,6 +115,7 @@ Do not let implementation drift into a generic centered hero + three cards + gra
 | 2026-08-23 | Use contract-owned VecDB as semantic recall, never as an automatic verdict. | Similarity is relatedness, not truth. | — |
 | 2026-08-23 | Injected wallet is the only write identity. | Matches existing hardened repository behavior and avoids hidden custody. | — |
 | 2026-08-23 | Fail closed on missing public evidence or malformed consensus output. | A weak answer must not silently become authoritative state. | — |
+| 2026-08-24 | Persist structured reason codes and canonical precedent IDs, not model prose. | Every consensus-derived stored field must be in the validator equivalence boundary. | Free-form persisted reasoning |
 | 2026-08-23 | UI follows the project-specific design language in `ui/ux.md`. | The ten projects must be visually and structurally distinct. | — |
 
 ## Source conventions inherited from existing repositories

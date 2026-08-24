@@ -60,12 +60,15 @@ def test_accept_envelope_requires_exact_match_and_supported_evidence(deployed):
     contract.register_feature(1, "tower", {"status": "OPEN"}, ZERO)
     contract.submit_cluster(1, 1, "status", "CLOSED", "https://example.com/evidence", ZERO, "u09tun")
     cluster = contract.get_cluster(1)
-    base = {"decision": "ACCEPT_DELTA", "attribute": "status", "value": "CLOSED", "source_accessible": True, "feature_match": "MATCH", "support": "SUPPORTED", "reason": "Evidence directly states the closure.", "memory_ids": []}
+    base = {"decision": "ACCEPT_DELTA", "attribute": "status", "value": "CLOSED", "source_accessible": True, "feature_match": "MATCH", "support": "SUPPORTED", "reason_code": "DIRECT_SUPPORT", "memory_ids": []}
     assert contract._validate_envelope(__import__("json").dumps(base), cluster, [])["decision"] == "ACCEPT_DELTA"
     for field, value in (("feature_match", "MISMATCH"), ("feature_match", "UNCLEAR"), ("source_accessible", False), ("support", "INSUFFICIENT")):
         bad = dict(base); bad[field] = value
         with pytest.raises(Exception):
             contract._validate_envelope(__import__("json").dumps(bad), cluster, [])
+    bad_reason = dict(base); bad_reason["reason_code"] = "INSUFFICIENT_SUPPORT"
+    with pytest.raises(Exception):
+        contract._validate_envelope(__import__("json").dumps(bad_reason), cluster, [])
 
 
 def test_pagination_views_return_authoritative_ids(deployed):

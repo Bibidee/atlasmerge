@@ -357,3 +357,23 @@ Copy this block for every meaningful work unit:
 
 **Next exact action**
 - Scaffold the repo and implement deterministic contract types/state plus direct tests.
+
+### 2026-08-24 19:10 +01:00 — Finalisation workflow and consensus hardening
+
+**Changed**
+- Removed the controlled acceptance-evidence fixture from the production tree.
+- Replaced Report's hard-coded layer/feature IDs with authoritative live selectors and truthful empty-contract gating.
+- Added a real Create Layer form; registration now validates the native attribute object and a strict geometry digest.
+- Enforced exact geohash-cell validation (standard alphabet, precision 5–12), strict geometry SHA-256 digests, structured consensus reason codes, canonical memory-ID order, and validator equivalence over every persisted consensus-derived field.
+- Added GenLayer write preflight, accurate pending/undetermined/timeout states, explorer links, retryable terminal states, and an explicit MetaMask Snap capability error for wallets that cannot use GenLayer writes.
+
+**Verification**
+- Web TypeScript and ESLint passed. Vitest passed: 3 tests in 1 file.
+- Direct source and behavioral tests need re-run after the contract-envelope update; Direct Mode remains blocked on Windows and its Linux upstream artifact issue is unresolved.
+
+**Reality check**
+- These contract changes are not deployed. `0x92c78D3fdc71d0DA10475638B250cb4df3aF75ec` is no longer a source match once this work is committed; no live lifecycle claim transfers to this source.
+- The screenshot's Brave Wallet cannot complete this SDK's MetaMask-Snap write path. No user transaction was sent.
+
+**Next exact action**
+- Run the remaining local checks, commit the source, then deploy a fresh StudioNet contract before configuring Vercel.

@@ -1,8 +1,0 @@
-AtlasMerge controlled acceptance fixture
-
-Feature: AtlasMerge Test Kiosk
-Location: Paris pilot test area
-Attribute: status
-Value: CLOSED
-
-This public, immutable test fixture directly supports the submitted status change for the named feature. It is intentionally for contract lifecycle verification only and is not a claim about a real-world map feature.

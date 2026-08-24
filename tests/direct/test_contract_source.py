@@ -43,7 +43,11 @@ def test_attribute_validation_and_fail_closed_evidence_are_present():
     assert "STATUS_VALUES" in code
     assert "ACCESS_VALUES" in code
     assert "DIRECTION_VALUES" in code
-    assert "Evidence %s or digest verification failed" in code
+    assert "GEOHASH_ALPHABET" in code
+    assert "MIN_GEOHASH=5" in code
+    assert "self._validate_digest(geometry_digest)" in code
+    assert "reason_code" in code
+    assert 'fields=("decision","attribute","value","source_accessible","feature_match","support","reason_code","memory_ids")' in code
     assert "unsupported evidence cannot accept" in code
     assert "feature mismatch cannot accept" in code
     assert "MAX_EVIDENCE=6000" in code
