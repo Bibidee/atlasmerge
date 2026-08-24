@@ -501,3 +501,10 @@ Copy this block for every meaningful work unit:
 - Contract/source suite result: **11 passed**.
 - Live canonical contract readback: layer 1 exists with bbox `{"max_lat_e6":6650000,"max_lng_e6":3550000,"min_lat_e6":6450000,"min_lng_e6":3250000}`; `get_layer_features(1,0,32)` returns `[]`.
 - CLI feature attempts `0x6773cb…d6cb4` and `0x4cbeca…a3d5c8` finalized with contract errors because the CLI sent the attribute dictionary as text. They changed no state. Native injected-wallet signing remains required for feature → cluster → adjudication live population.
+### 2026-08-24 22:48 +01:00 — Frontend u256 route-ID boundary fix
+
+- All entity route IDs are now strictly validated as decimal strings and converted to `bigint` before GenLayer calldata: layer, feature, cluster, layer features/clusters, history, semantic-memory, and write methods.
+- Regression coverage: 25 frontend tests passed across 5 files; TypeScript and production build passed. The Vercel production build passed.
+- Frontend deployment: `dpl_C93zxF8aM3GsdsNoDbBma65vGQCU`; `https://atlasmerge.vercel.app` points to it. Contract was not redeployed.
+- Live `get_layer(1)` result: steward `0x79b3ecbe6a65bee93b2fcda78e6909892671507f`, feature count 0, version 1, canonical E6 bbox persisted.
+- Steward comparison: this does **not** match the currently supplied wallet `0xc94a…3761`; that wallet is not authorized to register features on Layer 1. Do not attempt feature registration from that account.
