@@ -23,12 +23,12 @@ a bounded canonical delta to a geographic feature: open/closed, name, access, di
 ## Current status
 
 **Phase:** StudioNet release candidate
-**Code status:** Implemented; current source commit is `ad4a22e4723391bb5588fdfe74affe1199c1cf4b`.
-**StudioNet contract:** `0x92c78D3fdc71d0DA10475638B250cb4df3aF75ec` (deployment `0x37e0b525db17bae63fdaf3e84a88c085205e3cc490a47fbd17b35225c9bb20b9`).
-**Live frontend:** https://atlasmerge.vercel.app (Vercel deployment `dpl_8LTgkgg94DehZJpgAdegTb8g6Ugd`).
+**Code status:** Implemented; current contract source commit is `0f0829daff01114f5f4531bcaa9c020f1cf1de34`.
+**StudioNet contract:** `0xd0C073A97D80087439920D2bEe6D5580707E38e2` (deployment `0x9c1ce43a92e901fab58e0eaa29794c0d7bd80e9ccf3f93fab457296588f72186`).
+**Live frontend:** https://atlasmerge.vercel.app (Vercel deployment `dpl_8vgBkeMgrxJraFQ9MsyaNGksc2zY`).
 **Last durable update:** 2026-08-24
 
-The current contract enforces `MATCH` + accessible + `SUPPORTED` for acceptance, hashes exactly the evidence shown to consensus, and exposes authoritative enumeration IDs. It is freshly deployed but unseeded because the contract now correctly requires a native object for feature registration; no accepted real-evidence mutation or browser-wallet signed write is claimed. Exact transaction evidence is in `handoff.md`.
+The current contract enforces `MATCH` + accessible + `SUPPORTED` for acceptance, hashes exactly the evidence shown to consensus, validates exact geohash cells and geometry digests, and persists canonical consensus metadata. It is freshly deployed but unseeded; no accepted real-evidence mutation or browser-wallet signed write is claimed. Exact transaction evidence is in `handoff.md`.
 
 ## Non-negotiable product boundary
 

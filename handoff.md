@@ -377,3 +377,27 @@ Copy this block for every meaningful work unit:
 
 **Next exact action**
 - Run the remaining local checks, commit the source, then deploy a fresh StudioNet contract before configuring Vercel.
+
+### 2026-08-24 19:20 +01:00 — Canonical finalisation deployment
+
+**Source association**
+- Contract source commit: `0f0829daff01114f5f4531bcaa9c020f1cf1de34` (`finalize live workflow and consensus metadata`), pushed to `origin/main`.
+- Contract source SHA-256: `114891D248BF599EFC7DCE38FA543FFE232F142356F729B2D9461B660821F266`.
+- StudioNet contract: `0xd0C073A97D80087439920D2bEe6D5580707E38e2`.
+- Deployment transaction: `0x9c1ce43a92e901fab58e0eaa29794c0d7bd80e9ccf3f93fab457296588f72186` — `MAJORITY_AGREE`; leader GenVM execution `SUCCESS`.
+
+**Frontend**
+- Local public configuration and Vercel production were updated to the new contract address.
+- Vercel deployment `dpl_8vgBkeMgrxJraFQ9MsyaNGksc2zY` is Ready at `https://web-7a880q4v2-bibidees-projects.vercel.app`.
+- `https://atlasmerge.vercel.app` was explicitly aliased to that deployment; the fetched compiled JavaScript contains the new contract address.
+
+**Verification**
+- Frontend TypeScript and ESLint passed; Vitest: 3 passed in 1 file; production build passed.
+- Direct Python tests were not run locally because this Windows shell exposes no Python interpreter. The existing Direct Mode behavioral environment also has the documented upstream GenVM artifact blocker; no behavioral pass is claimed.
+
+**Reality check**
+- The fresh contract is truthfully empty. No create/register/submit/adjudicate browser-wallet lifecycle, accepted delta, history increment, VecDB insertion, or new negative lifecycle is proven on `0xd0…38e2`.
+- The production write path now reports that a Brave-only wallet is unsupported by the current GenLayer SDK: MetaMask with the GenLayer Snap is required. No transaction was sent from the screenshot session.
+
+**Next exact action**
+- Use a MetaMask browser profile with the GenLayer Snap to create the first layer and feature through the production UI, then record actual transaction hashes and re-read state.
