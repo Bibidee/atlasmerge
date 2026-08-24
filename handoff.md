@@ -487,3 +487,11 @@ Copy this block for every meaningful work unit:
 - Canonical contract: `0x874a677F561F14D4F9722275FA1f46D9D12c5590`.
 - Vercel production deployment: `dpl_GJntFukky5pbeQfEkn3cXycyWkMV` (`https://web-hz0jw15y0-bibidees-projects.vercel.app`).
 - `https://atlasmerge.vercel.app` was explicitly aliased to that deployment. The public production JavaScript contains `0x874a677F561F14D4F9722275FA1f46D9D12c5590` and does not contain the superseded `0x93F35446B739874E2cf154E58Bae4fC803E3017D` address.
+### 2026-08-24 21:52 +01:00 — Wallet reset persistence fix
+
+- Wallet selection is persisted in session storage and restored after application reset/reload.
+- The provider rehydrates the existing account with `eth_accounts` and restores the current chain without requesting a new signature.
+- Transient injected-provider `disconnect` events now trigger rediscovery instead of clearing the connected wallet UI state.
+- Frontend tests (13), typecheck, local production build, and Vercel production build passed.
+- Git commit: `4e2581b`; Vercel deployment: `dpl_FV6krVjh2ciC1GQtuojaRJgTVEhu`; `https://atlasmerge.vercel.app` points to this deployment.
+- Live seeding: `create_layer` succeeded on canonical contract with tx `0x83ec22599554a81d1f14140e250b56a7648f69a297fc87a5ba1f4dbd92f8c84f`, returning layer 1. CLI feature writes were intentionally rejected by the contract because the CLI serialized the dictionary as text (`attribute object required`); no feature/cluster was falsely claimed.
