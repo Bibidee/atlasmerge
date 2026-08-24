@@ -541,3 +541,11 @@ Copy this block for every meaningful work unit:
 - Copied `evidence/national-theatre-rename.txt` byte-for-byte to `apps/web/public/evidence/national-theatre-rename.txt`; both are 1,099 bytes with digest `sha256:ff3e66d30cacf447f2a2be64b86508404d56ea6c98306e15c49df1e3a8cfc701`.
 - Cluster detail now reads the target feature, displays the human-readable status and actual current attribute value in BEFORE, and renders no adjudication action once status is terminal; only status `PENDING` can call `adjudicate_cluster`.
 - Added regression tests for status labels, terminal-button gating, and current-value rendering. Frontend tests: 37 passed; typecheck and lint completed successfully.
+
+### 2026-08-25 — Evidence asset deployed and GenVM fetch proven
+
+- Frontend source commit: `96f9642b15fa0b779e14a35e36772c52fa1b205a` (pushed to `origin/main`). Local production build and Vercel build passed.
+- Vercel deployment: `dpl_4pDzPKEcYioHPde6XrbddfrCSK1K`, ready at `https://web-g7qfvmsx4-bibidees-projects.vercel.app`; `https://atlasmerge.vercel.app` was explicitly aliased to it.
+- Deployed evidence URL returned HTTP `200`, exactly `1,099` UTF-8 bytes/characters, and digest `sha256:ff3e66d30cacf447f2a2be64b86508404d56ea6c98306e15c49df1e3a8cfc701`.
+- Real StudioNet/GenVM proof used temporary probe contract `0x1Be1DF13f2282F0Ba8ED57331f106Db8C50d6396`, deployment tx `0x6cbd068e9341ce5fa0f8a9f4fb905694fd8c49b162370be62b2fb693a0c65b26`, with `gl.vm.run_nondet_unsafe` wrapping `gl.nondet.web.get`. Verify tx `0x5bb7bcf192bdb53ba157cbf5702d5a7cb37fd8de69713e3c5a6ca558598b5eea` finalized with consensus `Accepted`; leader and agreeing validators reported GenVM `SUCCESS` and returned: `{"body_length":1099,"digest_matches":true,"non_empty":true,"sha256":"sha256:ff3e66d30cacf447f2a2be64b86508404d56ea6c98306e15c49df1e3a8cfc701","status":200,"under_limit":true}`.
+- The canonical AtlasMerge contract was not changed or redeployed. Cluster 1 was not modified or retried. Cluster 2 is now safe to submit.
