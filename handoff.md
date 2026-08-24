@@ -450,3 +450,19 @@ Copy this block for every meaningful work unit:
 
 **Next exact action**
 - Deploy this frontend-only generic-provider change, then retry Create Layer with Rabby and capture the transaction rail result.
+
+### 2026-08-24 20:30 +01:00 — Final contract invariant pass staged
+
+**Changed**
+- Added authoritative exact bounding-box validation and deterministic canonical storage.
+- Added persistent-reason consistency checks, numeric canonical memory-ID ordering, and same-attribute precedent filtering.
+- Replaced Create Layer raw JSON input with four bounded numeric coordinate fields and removed the wallet picker from ordinary UI.
+
+**Verification**
+- Frontend TypeScript, lint, and Vitest were invoked successfully before the production build. Direct contract tests remain unavailable locally because this shell has no Python interpreter.
+
+**Reality check**
+- These changes require a new StudioNet deployment and Vercel update before they can be considered production behavior.
+
+**Next exact action**
+- Commit the frozen changes, deploy the new contract once, then update Vercel to its address.

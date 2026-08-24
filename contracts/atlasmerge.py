@@ -27,7 +27,7 @@ ALLOWED_DECISIONS=("ACCEPT_DELTA", "REJECT_DELTA", "SPLIT_CLUSTER", "INSUFFICIEN
 STATUS_VALUES=("OPEN", "CLOSED", "UNKNOWN", "CONSTRUCTION", "TEMPORARILY_CLOSED")
 ACCESS_VALUES=("YES", "NO", "PRIVATE", "PERMISSIVE", "CUSTOMERS", "DESTINATION")
 DIRECTION_VALUES=("ONE_WAY", "TWO_WAY", "UNKNOWN")
-GEOHASH_ALPHABET="0123456789bcdefghjkmnpqrstuvwxyz"
+GEOHASH_ALPHABET="0123456789bcdefghjkmnpqrstuvwxyz"; BBOX_FIELDS=("min_lat","max_lat","min_lng","max_lng")
 REASON_CODES=("DIRECT_SUPPORT", "SOURCE_UNAVAILABLE", "DIGEST_MISMATCH", "FEATURE_MISMATCH", "CONTRADICTED", "MIXED_EVIDENCE", "INSUFFICIENT_SUPPORT", "STALE_VERSION")
 
 @allow_storage
@@ -114,6 +114,16 @@ class AtlasMerge(gl.Contract):
         value=self._clean_text(value, MAX_GEOHASH, "coarse geohash").lower()
         if len(value)<MIN_GEOHASH or any(char not in GEOHASH_ALPHABET for char in value): raise Exception("coarse geohash must use the geohash alphabet at precision 5-12")
         return value
+    def _validate_bbox(self, bbox: typing.Any) -> str:
+        if not isinstance(bbox, dict) or set(bbox.keys()) != set(BBOX_FIELDS): raise Exception("bbox must contain exactly min_lat, max_lat, min_lng, max_lng")
+        normalized={}
+        for field in BBOX_FIELDS:
+            value=bbox[field]
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or value != value or abs(value)==float("inf"): raise Exception("bbox coordinates must be finite numbers")
+            normalized[field]=float(value)
+        if normalized["min_lat"] < -90 or normalized["max_lat"] > 90 or normalized["min_lng"] < -180 or normalized["max_lng"] > 180: raise Exception("bbox coordinates are outside geographic bounds")
+        if normalized["min_lat"] >= normalized["max_lat"] or normalized["min_lng"] >= normalized["max_lng"]: raise Exception("bbox minimums must be less than maximums")
+        return json.dumps(normalized, sort_keys=True, separators=(",",":"))
     def _reason_text(self, reason_code: str) -> str:
         return {"DIRECT_SUPPORT":"Accessible evidence directly supports the submitted value.","SOURCE_UNAVAILABLE":"Public evidence was unavailable.","DIGEST_MISMATCH":"Public evidence did not match the submitted digest.","FEATURE_MISMATCH":"Evidence did not match the targeted feature.","CONTRADICTED":"Evidence contradicted the submitted value.","MIXED_EVIDENCE":"Evidence was mixed; the bounded delta was not settled.","INSUFFICIENT_SUPPORT":"Evidence did not directly support the submitted value.","STALE_VERSION":"The feature changed after this cluster was created."}[reason_code]
     def _sha256(self, value: str) -> str:
@@ -140,16 +150,15 @@ class AtlasMerge(gl.Contract):
         matches=self.vectors.knn(self._embed(query), min(24, len(self.vectors))); out=[]
         for match in matches:
             ptr=match.value
-            if ptr.namespace_id==cluster.layer_id and ptr.geohash_prefix==cluster.geohash and len(out)<8:
+            if ptr.namespace_id==cluster.layer_id and ptr.geohash_prefix==cluster.geohash and self.deltas[ptr.record_id].attribute==cluster.attribute and len(out)<8:
                 delta=self.deltas[ptr.record_id]
                 out.append(json.dumps({"delta_id":str(ptr.record_id),"attribute":delta.attribute,"old":delta.old_value,"new":delta.new_value,"digest":delta.evidence_digest,"geohash":delta.geohash,"reason_code":delta.reason_code},sort_keys=True))
         return out
 
     @gl.public.write
     def create_layer(self, name: str, charter_url: str, charter_digest: str, bbox_json: typing.Any) -> u256:
-        if not isinstance(bbox_json, dict): raise Exception("bbox object required")
-        bbox_json=json.dumps(bbox_json, sort_keys=True)
-        name=self._clean_text(name, MAX_NAME, "name"); self._validate_https_url(charter_url); self._validate_digest(charter_digest); self._json_object(bbox_json, MAX_JSON)
+        bbox_json=self._validate_bbox(bbox_json)
+        name=self._clean_text(name, MAX_NAME, "name"); self._validate_https_url(charter_url); self._validate_digest(charter_digest)
         self.layer_count += 1; lid=self.layer_count
         self.layers[lid]=Layer(gl.message.sender_address, name, charter_url, charter_digest, bbox_json, 1, 0)
         return lid
@@ -208,13 +217,17 @@ class AtlasMerge(gl.Contract):
         reason_code=result.get("reason_code")
         if reason_code not in REASON_CODES: raise Exception("invalid consensus reason code")
         if result["decision"]=="ACCEPT_DELTA" and reason_code!="DIRECT_SUPPORT": raise Exception("accepted consensus requires DIRECT_SUPPORT")
+        if not result["source_accessible"] and reason_code not in ("SOURCE_UNAVAILABLE","DIGEST_MISMATCH"): raise Exception("inaccessible evidence requires an evidence reason code")
+        if result["feature_match"]=="MISMATCH" and reason_code!="FEATURE_MISMATCH": raise Exception("feature mismatch requires FEATURE_MISMATCH")
+        if result["support"]=="CONTRADICTED" and reason_code!="CONTRADICTED": raise Exception("contradicted evidence requires CONTRADICTED")
+        if result["support"]=="MIXED" and reason_code!="MIXED_EVIDENCE": raise Exception("mixed evidence requires MIXED_EVIDENCE")
         ids=result.get("memory_ids", [])
         if not isinstance(ids, list) or len(ids)>8: raise Exception("invalid memory IDs")
         seen=[]
         for memory_id in ids:
             if not isinstance(memory_id, str) or memory_id not in eligible_ids or memory_id in seen: raise Exception("memory ID was not an eligible precedent")
             seen.append(memory_id)
-        if ids != sorted(seen): raise Exception("memory IDs must be canonical")
+        if ids != sorted(seen, key=lambda value: int(value)): raise Exception("memory IDs must be canonical")
         result["memory_ids"]=seen; result["reason_code"]=reason_code
         return result
 
