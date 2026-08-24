@@ -17,7 +17,7 @@ def test_invariants_are_encoded_in_contract_source():
     assert "ptr.namespace_id == c.layer_id" in code
     assert "ptr.geohash_prefix == c.geohash" in code
     assert "if decision != \"ACCEPT_DELTA\"" in code
-    assert "if feature_id not in self.feature_history: return []" in code
+    assert "if feature_id not in self.feature_history_counts: return []" in code
     assert "if len(self.vectors)==0: return []" in code
 
 def test_evidence_digest_memory_and_enumeration_hardening_are_present():

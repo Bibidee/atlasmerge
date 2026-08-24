@@ -60,10 +60,12 @@ class AtlasMerge(gl.Contract):
     features: TreeMap[u256, Feature]
     clusters: TreeMap[u256, Cluster]
     deltas: TreeMap[u256, Delta]
-    feature_history: TreeMap[u256, DynArray[u256]]
-    layer_features: TreeMap[u256, DynArray[u256]]
-    layer_clusters: TreeMap[u256, DynArray[u256]]
-    feature_clusters: TreeMap[u256, DynArray[u256]]
+    feature_history_ids: TreeMap[str, u256]
+    feature_history_counts: TreeMap[u256, u256]
+    layer_feature_ids: TreeMap[str, u256]
+    layer_cluster_ids: TreeMap[str, u256]
+    feature_cluster_ids: TreeMap[str, u256]
+    feature_cluster_counts: TreeMap[u256, u256]
     feature_keys: TreeMap[str, u256]
     layer_count: u256; feature_count: u256; cluster_count: u256; delta_count: u256
     vectors: genlayer_embeddings.VecDB[np.float32, typing.Literal[384], VectorPointer, genlayer_embeddings.EuclideanDistanceSquared]
@@ -172,7 +174,7 @@ class AtlasMerge(gl.Contract):
         if unique_key in self.feature_keys: raise Exception("feature key already exists in layer")
         self.feature_count += 1; fid=self.feature_count
         self.features[fid]=Feature(layer_id, feature_key, initial_attrs_json, geometry_digest, 1, True); self.feature_keys[unique_key]=fid; layer.feature_count += 1; self.layers[layer_id]=layer
-        entries=self.layer_features[layer_id] if layer_id in self.layer_features else DynArray[u256](); entries.append(fid); self.layer_features[layer_id]=entries
+        self.layer_feature_ids[str(layer_id)+":"+str(layer.feature_count-1)]=fid
         return fid
 
     @gl.public.write
@@ -183,8 +185,10 @@ class AtlasMerge(gl.Contract):
         proposed_value=self._validate_attribute_value(proposed_attribute, proposed_value); self._validate_https_url(report_bundle_url); self._validate_digest(bundle_digest); self._clean_text(coarse_geohash, MAX_GEOHASH, "coarse geohash")
         self.cluster_count += 1; cid=self.cluster_count
         self.clusters[cid]=Cluster(gl.message.sender_address, layer_id, feature_id, proposed_attribute, proposed_value, report_bundle_url, bundle_digest, coarse_geohash, feature.version, STATUS_PENDING, "[]", "")
-        layer_entries=self.layer_clusters[layer_id] if layer_id in self.layer_clusters else DynArray[u256](); layer_entries.append(cid); self.layer_clusters[layer_id]=layer_entries
-        feature_entries=self.feature_clusters[feature_id] if feature_id in self.feature_clusters else DynArray[u256](); feature_entries.append(cid); self.feature_clusters[feature_id]=feature_entries
+        self.layer_cluster_ids[str(layer_id)+":"+str(self.cluster_count-1)]=cid
+        prior=self.feature_cluster_counts[feature_id] if feature_id in self.feature_cluster_counts else 0
+        self.feature_cluster_ids[str(feature_id)+":"+str(prior)]=cid
+        self.feature_cluster_counts[feature_id]=prior+1
         return cid
 
     @gl.public.write
@@ -255,7 +259,7 @@ class AtlasMerge(gl.Contract):
         attrs=self._json_object(feature.attrs_json, MAX_JSON); old=str(attrs.get(cluster.attribute, "")); attrs[cluster.attribute]=cluster.value
         self.delta_count += 1; did=self.delta_count
         delta=Delta(cluster.feature_id, cluster_id, cluster.attribute, old, cluster.value, cluster.bundle_digest, u256(int(datetime.now(timezone.utc).timestamp())), cluster.geohash, cluster.rationale)
-        self.deltas[did]=delta; history=self.feature_history[cluster.feature_id] if cluster.feature_id in self.feature_history else DynArray[u256](); history.append(did); self.feature_history[cluster.feature_id]=history
+        self.deltas[did]=delta; history_count=self.feature_history_counts[cluster.feature_id] if cluster.feature_id in self.feature_history_counts else 0; self.feature_history_ids[str(cluster.feature_id)+":"+str(history_count)]=did; self.feature_history_counts[cluster.feature_id]=history_count+1
         feature.attrs_json=json.dumps(attrs, sort_keys=True); feature.version += 1; self.features[cluster.feature_id]=feature
         cluster.status=STATUS_ACCEPTED; cluster.related_json=json.dumps(result.get("memory_ids", [])); self.clusters[cluster_id]=cluster
         self.vectors.insert(self._embed(self._memory_text(feature, delta)), VectorPointer(did, cluster.layer_id, cluster.geohash))
@@ -265,11 +269,6 @@ class AtlasMerge(gl.Contract):
     def get_feature(self, feature_id: u256) -> Feature: return self._feature(feature_id)
     @gl.public.view
     def get_layer(self, layer_id: u256) -> Layer: return self._layer(layer_id)
-    def _page(self, values: DynArray[u256], offset: u256, limit: u256) -> list[u256]:
-        if limit>32: raise Exception("limit must be at most 32")
-        out=[]; end=min(len(values), offset+limit)
-        for i in range(offset, end): out.append(values[i])
-        return out
     @gl.public.view
     def get_layers(self, offset: u256, limit: u256) -> list[Layer]:
         if limit>32: raise Exception("limit must be at most 32")
@@ -279,9 +278,9 @@ class AtlasMerge(gl.Contract):
     @gl.public.view
     def get_layer_features(self, layer_id: u256, offset: u256, limit: u256) -> list[Feature]:
         self._layer(layer_id)
-        if layer_id not in self.layer_features: return []
-        out=[]
-        for feature_id in self._page(self.layer_features[layer_id], offset, limit): out.append(self.features[feature_id])
+        if limit>32: raise Exception("limit must be at most 32")
+        layer=self._layer(layer_id); out=[]; end=min(layer.feature_count, offset+limit)
+        for i in range(offset, end): out.append(self.features[self.layer_feature_ids[str(layer_id)+":"+str(i)]])
         return out
     @gl.public.view
     def get_clusters(self, offset: u256, limit: u256) -> list[Cluster]:
@@ -292,9 +291,10 @@ class AtlasMerge(gl.Contract):
     @gl.public.view
     def get_feature_clusters(self, feature_id: u256, offset: u256, limit: u256) -> list[Cluster]:
         self._feature(feature_id)
-        if feature_id not in self.feature_clusters: return []
-        out=[]
-        for cluster_id in self._page(self.feature_clusters[feature_id], offset, limit): out.append(self.clusters[cluster_id])
+        if limit>32: raise Exception("limit must be at most 32")
+        if feature_id not in self.feature_cluster_counts: return []
+        out=[]; end=min(self.feature_cluster_counts[feature_id], offset+limit)
+        for i in range(offset, end): out.append(self.clusters[self.feature_cluster_ids[str(feature_id)+":"+str(i)]])
         return out
     @gl.public.view
     def get_cluster(self, cluster_id: u256) -> Cluster:
@@ -303,9 +303,9 @@ class AtlasMerge(gl.Contract):
     @gl.public.view
     def get_feature_history(self, feature_id: u256, offset: u256, limit: u256) -> list[Delta]:
         if limit>32: raise Exception("limit must be at most 32")
-        if feature_id not in self.feature_history: return []
-        history=self.feature_history[feature_id]; out=[]; end=min(len(history), offset+limit)
-        for i in range(offset, end): out.append(self.deltas[history[i]])
+        if feature_id not in self.feature_history_counts: return []
+        out=[]; end=min(self.feature_history_counts[feature_id], offset+limit)
+        for i in range(offset, end): out.append(self.deltas[self.feature_history_ids[str(feature_id)+":"+str(i)]])
         return out
     @gl.public.view
     def preview_related(self, cluster_id: u256, k: u256) -> list[str]:
