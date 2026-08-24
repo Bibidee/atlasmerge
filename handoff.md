@@ -401,3 +401,17 @@ Copy this block for every meaningful work unit:
 
 **Next exact action**
 - Use a MetaMask browser profile with the GenLayer Snap to create the first layer and feature through the production UI, then record actual transaction hashes and re-read state.
+
+### 2026-08-24 19:35 +01:00 — Layer form layout correction
+
+**Changed**
+- Corrected shared sheet/table form styles so each Create Layer and registration field is a stacked full-width control instead of an inline row with colliding labels.
+
+**Verification**
+- ESLint and production build passed.
+
+**Reality check**
+- This is a presentation-only correction; it does not change the contract or the wallet capability requirement.
+
+**Next exact action**
+- Deploy the layout correction to Vercel and retest the Create Layer screen with MetaMask plus the GenLayer Snap.
