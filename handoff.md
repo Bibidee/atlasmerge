@@ -308,6 +308,15 @@ Copy this block for every meaningful work unit:
 - The public `/clusters` page was rendered after the alias change and displayed `Cluster 1`, `status → CLOSED`, status `6`, and the authoritative evidence URL.
 - Clicking `Connect wallet` produced `No injected wallet is available`; no account request or transaction could occur in this browser session. This is a wallet-session prerequisite, not an application failure.
 
+### 2026-08-24 16:47 +01:00 — Submission-hardening deployment
+
+- Commit `ad4a22e4723391bb5588fdfe74affe1199c1cf4b` hardens the `ACCEPT_DELTA` envelope (`source_accessible`, `MATCH`, `SUPPORTED`, exact submitted attribute/value), makes the digest-bound and adjudicated artifact identical at 6,000 characters, removes string attribute coercion, adds authoritative ID enumeration, adds layer/feature workflow UI and manual-digest UX, behavioral Direct Mode tests, and GitHub Actions CI.
+- Contract SHA-256: `BA92EE9ED62FD6595C09DC00E62DC8565649656699F2D3758ABD095E487EF6DA`.
+- StudioNet deployment `0x92c78D3fdc71d0DA10475638B250cb4df3aF75ec`; deployment tx `0x37e0b525db17bae63fdaf3e84a88c085205e3cc490a47fbd17b35225c9bb20b9`; accepted with majority agreement and leader GenVM success.
+- Vercel deployment `dpl_8LTgkgg94DehZJpgAdegTb8g6Ugd` is Ready at `https://web-lzg1i3py2-bibidees-projects.vercel.app`; `https://atlasmerge.vercel.app` is aliased to it.
+- Local checks: static contract suite 4 passed; four behavioral Direct Mode tests are Windows-skipped because the upstream loader cannot unlink its active stdin temp file. Frontend Vitest 3 passed; typecheck, lint and build passed. Linux CI runs the behavioral suite.
+- This source is live but **not submission-ready yet**: it is unseeded and no native-wallet ACCEPT lifecycle, VecDB retrieval proof, fail-closed proof, stale-version proof, or CI run URL has been verified for this new address.
+
 ### 2026-08-23 19:10 +01:00 — Blueprint pack created
 
 **Goal**
