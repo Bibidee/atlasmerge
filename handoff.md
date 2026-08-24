@@ -415,3 +415,21 @@ Copy this block for every meaningful work unit:
 
 **Next exact action**
 - Deploy the layout correction to Vercel and retest the Create Layer screen with MetaMask plus the GenLayer Snap.
+
+### 2026-08-24 20:05 +01:00 — Frontend-only wallet write diagnostics
+
+**Changed**
+- No contract files were changed.
+- Added EIP-6963 wallet discovery, MetaMask preference/selection, and explicit provider selection in the application header when multiple wallets announce themselves.
+- Instrumented `contractWrite` stages: provider selection, account, StudioNet/Snap connect, chain validation, simulation, wallet signature, write submission, and finality.
+- Replaced lossy `instanceof Error` handling with an error normalizer that serializes nested `message`, `code`, `data`, `cause`, and own properties for the transaction rail and console.
+
+**Verification**
+- TypeScript, ESLint, Vitest (3 passed), and production build passed.
+
+**Reality check**
+- No browser Create Layer attempt has occurred after this change, so its exact underlying provider/SDK error is not yet known.
+- The canonical contract remains `0xd0C073A97D80087439920D2bEe6D5580707E38e2`; it was not redeployed.
+
+**Next exact action**
+- Deploy the frontend-only diagnostics release and have the user select MetaMask then retry Create Layer; record the complete displayed error verbatim.

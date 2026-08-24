@@ -2,39 +2,8 @@ import { createClient } from "genlayer-js";
 import { studionet } from "genlayer-js/chains";
 import { ExecutionResult, TransactionStatus, type TransactionHash } from "genlayer-js/types";
 import { config } from "./config";
-import { injectedProvider, requireStudioNet } from "./client";
+import { injectedProvider,normalizeWalletError,requireStudioNet,selectedWallet,withSelectedProviderAsWindow } from "./client";
 import type { TxStage } from "./types";
-
-const address = () => {
-  if (!config.isConfigured) throw new Error("UNAVAILABLE_READ: contract address is not configured");
-  return config.contractAddress as `0x${string}`;
-};
-const readClient = () => createClient({ chain: studionet, endpoint: config.endpoint });
-
-export async function contractRead(method: string, args: unknown[] = []): Promise<unknown> {
-  return readClient().readContract({ address: address(), functionName: method, args: args as never[] });
-}
-
-export async function contractWrite(method: string, args: unknown[], setStage: (stage: TxStage, hash?: string, message?: string) => void) {
-  const provider = injectedProvider();
-  if (!provider) throw new Error("No injected wallet found");
-  setStage("validating");
-  const accounts = await provider.request({ method: "eth_requestAccounts" }) as string[];
-  const account = accounts?.[0] as `0x${string}` | undefined;
-  if (!account) throw new Error("Wallet did not provide an account");
-  const writeClient = createClient({ chain: studionet, endpoint: config.endpoint, account, provider });
-  try { await writeClient.connect("studionet"); } catch (error) {
-    const message=error instanceof Error ? error.message : "Wallet setup failed";
-    if (message.includes("wallet_getSnaps") || message.includes("MetaMask") || message.includes("Snap")) throw new Error("WALLET_UNSUPPORTED: GenLayer StudioNet writes require MetaMask with the GenLayer Snap enabled; Brave Wallet cannot sign this transaction.");
-    throw error;
-  }
-  await requireStudioNet(provider);
-  try { await writeClient.simulateWriteContract({ address: address(), functionName: method, args: args as never[] }); } catch (error) { throw new Error(`EXPECTED_INPUT: ${error instanceof Error ? error.message : "contract preflight rejected this input"}`); }
-  setStage("signing");
-  const hash = await writeClient.writeContract({ address: address(), functionName: method, args: args as never[], value: 0n }) as TransactionHash;
-  setStage("submitted", hash); setStage("pending", hash);
-  let receipt; try { receipt=await readClient().waitForTransactionReceipt({ hash, status: TransactionStatus.FINALIZED, interval: 5_000, retries: 90 }); } catch (error) { const current=await readClient().getTransaction({hash}).catch(()=>undefined); if (current?.statusName===TransactionStatus.UNDETERMINED) { setStage("undetermined",hash,"Validators did not converge; no state changed"); throw new Error("UNDETERMINED"); } setStage("timeout",hash,"Transaction is still being processed by GenLayer validators."); throw new Error("CONSENSUS_PENDING"); }
-  if (receipt.statusName === TransactionStatus.UNDETERMINED) { setStage("undetermined", hash, "Validators did not converge; no state changed"); throw new Error("UNDETERMINED"); }
-  if (receipt.txExecutionResultName !== ExecutionResult.FINISHED_WITH_RETURN) { setStage("rollback", hash, "Finalized without a successful GenVM return"); throw new Error("GENVM_ROLLBACK"); }
-  setStage("success", hash); return hash;
-}
+const address=()=>{if(!config.isConfigured)throw new Error("UNAVAILABLE_READ: contract address is not configured");return config.contractAddress as `0x${string}`};const readClient=()=>createClient({chain:studionet,endpoint:config.endpoint});
+export async function contractRead(method:string,args:unknown[]=[]):Promise<unknown>{return readClient().readContract({address:address(),functionName:method,args:args as never[]})}
+export async function contractWrite(method:string,args:unknown[],setStage:(stage:TxStage,hash?:string,message?:string)=>void){let checkpoint="provider selection";const trace=(stage:TxStage,message:string,hash?:string)=>{console.info(`[AtlasMerge write] ${message}`);setStage(stage,hash,message)};try{checkpoint="provider selection";const wallet=selectedWallet();const provider=injectedProvider();if(!provider||!wallet)throw {code:"NO_PROVIDER",message:"No selected EIP-1193 wallet provider was discovered",data:{wallets:"none"}};trace("provider",`provider selection: ${wallet.name} (${wallet.rdns})`);checkpoint="account";trace("account",`account: requesting from ${wallet.name}`);const accounts=await provider.request({method:"eth_requestAccounts"}) as string[];const account=accounts?.[0] as `0x${string}`|undefined;if(!account)throw {code:"NO_ACCOUNT",message:"Wallet returned no account",data:{accounts}};trace("account",`account: ${account}`);const writeClient=createClient({chain:studionet,endpoint:config.endpoint,account,provider});checkpoint="connect StudioNet";trace("connecting","connect StudioNet: requesting network and GenLayer Snap");await withSelectedProviderAsWindow(provider,()=>writeClient.connect("studionet"));checkpoint="chain validation";trace("validating","chain validation: checking StudioNet chain 61999");await requireStudioNet(provider);checkpoint="simulateWriteContract";trace("simulating",`simulateWriteContract: ${method}`);await writeClient.simulateWriteContract({address:address(),functionName:method,args:args as never[]});checkpoint="wallet signature";trace("signing",`wallet signature: requesting ${method}`);const hash=await writeClient.writeContract({address:address(),functionName:method,args:args as never[],value:0n}) as TransactionHash;checkpoint="writeContract";trace("submitted",`writeContract: submitted ${hash}`,hash);trace("pending","consensus pending: waiting for FINALIZED",hash);let receipt;try{receipt=await readClient().waitForTransactionReceipt({hash,status:TransactionStatus.FINALIZED,interval:5_000,retries:90})}catch(error){const current=await readClient().getTransaction({hash}).catch(()=>undefined);if(current?.statusName===TransactionStatus.UNDETERMINED){trace("undetermined","consensus undetermined: no state changed",hash);throw error}trace("timeout","transaction is still being processed by GenLayer validators",hash);throw error}if(receipt.statusName===TransactionStatus.UNDETERMINED){trace("undetermined","consensus undetermined: no state changed",hash);throw {code:"UNDETERMINED",message:"Validators did not converge",data:receipt}}if(receipt.txExecutionResultName!==ExecutionResult.FINISHED_WITH_RETURN){trace("rollback","finalized GenVM rollback",hash);throw {code:"GENVM_ROLLBACK",message:"Finalized without a successful GenVM return",data:receipt}}trace("success","finalized: GenVM execution successful",hash);return hash}catch(error){const detail=normalizeWalletError(error,checkpoint);console.error("[AtlasMerge write failure]",{checkpoint,error});setStage("error",undefined,detail);throw error}}
