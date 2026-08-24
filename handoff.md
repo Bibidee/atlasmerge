@@ -280,6 +280,30 @@ Copy this block for every meaningful work unit:
 - The public cluster index therefore showed an empty state; this was a real contract defect, not missing data or a frontend rendering issue.
 - The source now corrects `get_clusters` to enumerate `cluster_count`, and makes `get_layer_clusters` use its layer-scoped count. It has passed the available source-invariant suite (4 tests), Vitest (3 tests), TypeScript, lint, and production build locally. Redeployment and a fresh live lifecycle remain required before this source can be called canonical.
 
+### 2026-08-24 16:04 +01:00 — Corrected canonical deployment and public release
+
+**Source association**
+- Committed source: `93f6215068a768921901d329d53356ae00593657` (`fix cluster enumeration views`).
+- Contract source SHA-256: `6CFCC936E4C237472AE90E7E5151450922A76DE6AAE64DBB5053A5CA9AA9486B`.
+- StudioNet deployment: `0xee63b52fD12899498BaC313b7c3Be9Ba0d8d435f`.
+- Deployment transaction: `0x46e367496ba837cbcae31f5d2ebec15d048c85068a7421bc405f2fd27f51bdf7` — accepted, leader GenVM success, majority agreement.
+
+**Lifecycle proof**
+- Create layer: `0x43260c7075641ca1054ad294448fceed4ece29e55d08e0d4ce6229a293b44312` — returned layer `1`.
+- Register feature: `0x3a2f3ec79cd9f6e825f29ce505f121dcac87386e3865289aa43c85a9bca00a92` — returned feature `1`.
+- Submit cluster: `0xe85a9e9ff92dfd55a521605458fde64137595252acc1114938afb52784dd44c1` — returned cluster `1`.
+- Adjudicate: `0xd81fcb00af7019e1cc27330747264dc994014de8eb187204ad246567e38719d7` — majority agreed, GenVM success, and finalized as status `6` / `INSUFFICIENT_EVIDENCE`; the feature remains unchanged.
+- `get_clusters(0,32)` and `get_layer_clusters(1,0,32)` both return the same authoritative cluster; `get_feature_history(1,0,32)` and `preview_related(1,8)` return `[]`.
+
+**Public frontend**
+- Production deployment `dpl_D4aN3BtEtu4Y4YsMW5opCLGxD749` is Ready at `https://web-i0qyhgn6i-bibidees-projects.vercel.app`.
+- `https://atlasmerge.vercel.app` was repointed to that deployment. Its compiled bundle contains the corrected address, and the SDK read of `get_clusters` returns the expected record.
+- Vercel SSO protection is disabled at the project level so the public URL is reachable.
+
+**Remaining truthful limits**
+- The CLI serializes its dict argument as pseudo-JSON, so this lifecycle proves contract behavior but does not prove a browser-native object write. The frontend itself sends objects through `genlayer-js`; injected-wallet signing still needs an available user wallet session.
+- No accepted, evidence-backed mutation is claimed. The verified outcome is deliberately fail-closed.
+
 ### 2026-08-23 19:10 +01:00 — Blueprint pack created
 
 **Goal**
