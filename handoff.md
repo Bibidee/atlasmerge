@@ -485,3 +485,5 @@ Copy this block for every meaningful work unit:
 - Contract source SHA-256: `ADEB7B1DF93AA6C1592D8734A2A8DD14D7DD9677F597AC694F3B55D438BAD51B`.
 - Deployment transaction: `0x11b39028660af8f39123221562409d2d1235976052acfdf4556f7f87754383ce`.
 - Canonical contract: `0x874a677F561F14D4F9722275FA1f46D9D12c5590`.
+- Vercel production deployment: `dpl_GJntFukky5pbeQfEkn3cXycyWkMV` (`https://web-hz0jw15y0-bibidees-projects.vercel.app`).
+- `https://atlasmerge.vercel.app` was explicitly aliased to that deployment. The public production JavaScript contains `0x874a677F561F14D4F9722275FA1f46D9D12c5590` and does not contain the superseded `0x93F35446B739874E2cf154E58Bae4fC803E3017D` address.
