@@ -521,3 +521,11 @@ Copy this block for every meaningful work unit:
 - Finalized receipts without execution evidence now fetch the full transaction and debug trace; if still unknown they surface `finalized_unknown` while preserving the transaction hash and prompting authoritative state refresh, never falsely reporting rollback.
 - Regression coverage now includes SDK success, StudioNet leader success, explicit error, nonzero trace failure, missing execution data, and terminal-state preservation. Frontend tests: 30 passed; typecheck and lint passed.
 - Production build passed with Next.js 16.3.2. No contract source or deployment files were changed.
+
+### 2026-08-24 — Receipt classification frontend deployed
+
+- Source commit: `d89b540cdd8fabafc837ffd165c1987e81bffb21` (pushed to `origin/main`).
+- Vercel production deployment: `dpl_GS65WWvQGonDxzFuvEnG942LVAXa`, ready at `https://web-pwlhwz1vy-bibidees-projects.vercel.app`.
+- Public alias `https://atlasmerge.vercel.app` now points to that deployment and returned HTTP 200 after promotion.
+- This release changed frontend finality classification only. The Intelligent Contract was not changed or redeployed.
+- Safe next user action: retry the Report transaction. The UI will preserve the transaction hash and will no longer label a finalized receipt as rollback unless explicit execution-failure evidence is present.
