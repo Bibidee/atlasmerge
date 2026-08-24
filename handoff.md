@@ -317,6 +317,11 @@ Copy this block for every meaningful work unit:
 - Local checks: static contract suite 4 passed; four behavioral Direct Mode tests are Windows-skipped because the upstream loader cannot unlink its active stdin temp file. Frontend Vitest 3 passed; typecheck, lint and build passed. Linux CI runs the behavioral suite.
 - This source is live but **not submission-ready yet**: it is unseeded and no native-wallet ACCEPT lifecycle, VecDB retrieval proof, fail-closed proof, stale-version proof, or CI run URL has been verified for this new address.
 
+### 2026-08-24 16:44 +01:00 — CI status corrected
+
+- GitHub Actions run `32752454573` completed successfully: https://github.com/Bibidee/atlasmerge/actions/runs/32752454573
+- The suite executes static contract validation, frontend tests, typecheck, lint, and build. The behavioral Direct Mode job remains visible but non-blocking because `genlayer-test` 0.29.2 currently requests a deleted upstream GenVM asset and fails before test execution; this is documented rather than treated as contract coverage.
+
 ### 2026-08-23 19:10 +01:00 — Blueprint pack created
 
 **Goal**
