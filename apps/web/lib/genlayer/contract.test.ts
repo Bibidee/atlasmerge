@@ -1,0 +1,3 @@
+import {describe,expect,it} from "vitest";
+import {AtlasWriteError,isAtlasWriteError,isTerminalWriteStage} from "./contract";
+describe("typed transaction failures",()=>{it.each(["success","timeout","undetermined","rollback","cancelled"] as const)("preserves %s as terminal",stage=>expect(isTerminalWriteStage(stage)).toBe(true));it("retains terminal stage, code, hash, and cause",()=>{const cause={code:"UNDETERMINED",data:{round:3}};const error=new AtlasWriteError("No convergence","undetermined","UNDETERMINED","0xabc",{cause});expect(isAtlasWriteError(error)).toBe(true);expect(error).toMatchObject({stage:"undetermined",code:"UNDETERMINED",hash:"0xabc",cause});});});

@@ -114,16 +114,12 @@ class AtlasMerge(gl.Contract):
         value=self._clean_text(value, MAX_GEOHASH, "coarse geohash").lower()
         if len(value)<MIN_GEOHASH or any(char not in GEOHASH_ALPHABET for char in value): raise Exception("coarse geohash must use the geohash alphabet at precision 5-12")
         return value
-    def _validate_bbox(self, bbox: typing.Any) -> str:
-        if not isinstance(bbox, dict) or set(bbox.keys()) != set(BBOX_FIELDS): raise Exception("bbox must contain exactly min_lat, max_lat, min_lng, max_lng")
-        normalized={}
-        for field in BBOX_FIELDS:
-            value=bbox[field]
-            if isinstance(value, bool) or not isinstance(value, (int, float)) or value != value or abs(value)==float("inf"): raise Exception("bbox coordinates must be finite numbers")
-            normalized[field]=float(value)
-        if normalized["min_lat"] < -90 or normalized["max_lat"] > 90 or normalized["min_lng"] < -180 or normalized["max_lng"] > 180: raise Exception("bbox coordinates are outside geographic bounds")
-        if normalized["min_lat"] >= normalized["max_lat"] or normalized["min_lng"] >= normalized["max_lng"]: raise Exception("bbox minimums must be less than maximums")
-        return json.dumps(normalized, sort_keys=True, separators=(",",":"))
+    def _validate_bbox(self, min_lat_e6: int, max_lat_e6: int, min_lng_e6: int, max_lng_e6: int) -> str:
+        values=(min_lat_e6,max_lat_e6,min_lng_e6,max_lng_e6)
+        if any(isinstance(value,bool) or not isinstance(value,int) for value in values): raise Exception("bbox coordinates must be E6 integers")
+        if min_lat_e6 < -90000000 or max_lat_e6 > 90000000 or min_lng_e6 < -180000000 or max_lng_e6 > 180000000: raise Exception("bbox coordinates are outside geographic bounds")
+        if min_lat_e6 >= max_lat_e6 or min_lng_e6 >= max_lng_e6: raise Exception("bbox minimums must be less than maximums")
+        return json.dumps({"max_lat_e6":max_lat_e6,"max_lng_e6":max_lng_e6,"min_lat_e6":min_lat_e6,"min_lng_e6":min_lng_e6},sort_keys=True,separators=(",",":"))
     def _reason_text(self, reason_code: str) -> str:
         return {"DIRECT_SUPPORT":"Accessible evidence directly supports the submitted value.","SOURCE_UNAVAILABLE":"Public evidence was unavailable.","DIGEST_MISMATCH":"Public evidence did not match the submitted digest.","FEATURE_MISMATCH":"Evidence did not match the targeted feature.","CONTRADICTED":"Evidence contradicted the submitted value.","MIXED_EVIDENCE":"Evidence was mixed; the bounded delta was not settled.","INSUFFICIENT_SUPPORT":"Evidence did not directly support the submitted value.","STALE_VERSION":"The feature changed after this cluster was created."}[reason_code]
     def _sha256(self, value: str) -> str:
@@ -156,8 +152,8 @@ class AtlasMerge(gl.Contract):
         return out
 
     @gl.public.write
-    def create_layer(self, name: str, charter_url: str, charter_digest: str, bbox_json: typing.Any) -> u256:
-        bbox_json=self._validate_bbox(bbox_json)
+    def create_layer(self, name: str, charter_url: str, charter_digest: str, min_lat_e6: int, max_lat_e6: int, min_lng_e6: int, max_lng_e6: int) -> u256:
+        bbox_json=self._validate_bbox(min_lat_e6,max_lat_e6,min_lng_e6,max_lng_e6)
         name=self._clean_text(name, MAX_NAME, "name"); self._validate_https_url(charter_url); self._validate_digest(charter_digest)
         self.layer_count += 1; lid=self.layer_count
         self.layers[lid]=Layer(gl.message.sender_address, name, charter_url, charter_digest, bbox_json, 1, 0)

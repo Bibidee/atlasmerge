@@ -1,11 +1,9 @@
 import os
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 from gltest.direct import VMContext, create_address, deploy_contract
-
-pytestmark = pytest.mark.skipif(os.name == "nt", reason="gltest Direct Mode loader cannot unlink its active stdin temp file on Windows; CI runs this suite on Linux")
-
 
 CONTRACT = Path(__file__).parents[2] / "contracts" / "atlasmerge.py"
 ZERO = "sha256:" + "0" * 64
@@ -18,12 +16,28 @@ def deployed():
     reporter = create_address("reporter")
     vm.sender = steward
     with vm.activate():
-        contract = deploy_contract(CONTRACT, vm)
+        # genlayer-test unlinks an fd-0 backing file before releasing it; Windows
+        # forbids that operation. CI/Linux uses the loader unchanged.
+        if os.name == "nt":
+            with patch("os.unlink"):
+                contract = deploy_contract(CONTRACT, vm)
+        else:
+            contract = deploy_contract(CONTRACT, vm)
         yield vm, contract, steward, reporter
 
 
 def create_layer(contract):
-    return contract.create_layer("Paris pilot", "https://example.com/charter", ZERO, {"minLat": "48", "maxLat": "49"})
+    return contract.create_layer("Paris pilot", "https://example.com/charter", ZERO, 48_000_000, 49_000_000, 2_000_000, 3_000_000)
+
+
+def test_bbox_fixed_point_validation_and_storage(deployed):
+    _, contract, _, _ = deployed
+    assert contract.create_layer("Lagos pilot", "https://example.com/charter", ZERO, 6_450_000, 6_650_000, 3_250_000, 3_550_000) == 1
+    assert contract.get_layer(1).bbox_json == '{"max_lat_e6":6650000,"max_lng_e6":3550000,"min_lat_e6":6450000,"min_lng_e6":3250000}'
+    with pytest.raises(Exception, match="outside geographic bounds"):
+        contract.create_layer("Bad", "https://example.com/charter", ZERO, -90_000_001, 1, 0, 1)
+    with pytest.raises(Exception, match="minimums"):
+        contract.create_layer("Bad", "https://example.com/charter", ZERO, 2, 1, 0, 1)
 
 
 def test_layer_feature_authorization_normalization_and_duplicate_protection(deployed):
@@ -41,6 +55,7 @@ def test_submission_validation_cross_layer_and_cancellation_permissions(deployed
     vm, contract, steward, reporter = deployed
     create_layer(contract)
     contract.register_feature(1, "tower", {"status": "OPEN"}, ZERO)
+    contract.create_layer("Second layer", "https://example.com/charter-2", ZERO, 50_000_000, 51_000_000, 2_000_000, 3_000_000)
     with vm.expect_revert("feature does not belong to layer"):
         contract.submit_cluster(2, 1, "status", "CLOSED", "https://example.com/evidence", ZERO, "u09tun")
     with vm.expect_revert("direct HTTPS"):
