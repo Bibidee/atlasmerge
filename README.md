@@ -10,15 +10,17 @@ AtlasMerge is a user-facing GenLayer consensus layer for bounded changes to crow
 
 ## Evidence and consensus
 
-Evidence must be a direct HTTPS URL. The submitter supplies `sha256:<64 lowercase hex>` over the exact UTF-8 response text. During adjudication every validator fetches the URL, bounds the response, verifies the digest, and treats fetched text as untrusted data. An unavailable, malformed, oversized, or digest-mismatched source resolves fail-closed as `INSUFFICIENT_EVIDENCE`; it never mutates the feature.
+Evidence must be a direct HTTPS URL. The submitter supplies `sha256:<64 lowercase hex>` over one bounded exact UTF-8 text artifact (6,000 characters maximum). During adjudication every validator fetches that same bounded artifact, verifies the digest, and sends the identical text to the consensus prompt as untrusted data. An unavailable, malformed, oversized, or digest-mismatched source resolves fail-closed as `INSUFFICIENT_EVIDENCE`; it never mutates the feature.
 
-Validators only settle the submitted attribute and value. Feature versions prevent stale writes. Accepted deltas append immutable history; rejection, split, insufficient evidence, cancellation, and undetermined consensus do not change feature attributes.
+The Report page computes that digest automatically when the source permits browser CORS reads. If CORS prevents that read, a mapper may paste a manually computed digest; AtlasMerge has no backend bypass and validators still independently fetch and verify the URL.
+
+Validators only settle the submitted attribute and value. `ACCEPT_DELTA` additionally requires accessible evidence, `feature_match == MATCH`, and `support == SUPPORTED`. Feature versions prevent stale writes. Accepted deltas append immutable history; rejection, split, insufficient evidence, cancellation, and undetermined consensus do not change feature attributes.
 
 VecDB stores accepted-delta precedent. It is bounded retrieval context filtered by layer and coarse geohash, never authorization or an automatic verdict. Only retrieved, eligible precedent IDs may be persisted.
 
 ## User workflow
 
-1. A layer steward creates a layer and registers a feature.
+1. Browse a layer, then its authoritative feature IDs; the steward can register a feature from that layer page.
 2. A user submits a one-attribute cluster with HTTPS evidence, digest, and geohash.
 3. Any wallet may trigger adjudication.
 4. Browse authoritative clusters, feature history, evidence, rationale, and eligible precedent from contract views.

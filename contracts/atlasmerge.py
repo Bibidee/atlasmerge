@@ -20,7 +20,7 @@ import numpy as np
 from genlayer import *
 import genlayer_embeddings
 
-MAX_NAME=96; MAX_URL=320; MAX_DIGEST=71; MAX_JSON=2048; MAX_GEOHASH=12; MAX_REASON=480; MAX_EVIDENCE=12000; MAX_PAGE_BYTES=16384; MAX_PAGE_CONTEXT=6000; MAX_PAGE_REDIRECTS=0
+MAX_NAME=96; MAX_URL=320; MAX_DIGEST=71; MAX_JSON=2048; MAX_GEOHASH=12; MAX_REASON=480; MAX_EVIDENCE=6000; MAX_PAGE_BYTES=16384; MAX_PAGE_CONTEXT=6000; MAX_PAGE_REDIRECTS=0
 STATUS_PENDING=2; STATUS_ACCEPTED=3; STATUS_REJECTED=4; STATUS_SPLIT=5; STATUS_INSUFFICIENT=6
 ALLOWED_ATTRIBUTES=("name", "status", "access", "category", "direction", "geometry_note")
 ALLOWED_DECISIONS=("ACCEPT_DELTA", "REJECT_DELTA", "SPLIT_CLUSTER", "INSUFFICIENT_EVIDENCE")
@@ -148,19 +148,7 @@ class AtlasMerge(gl.Contract):
 
     @gl.public.write
     def register_feature(self, layer_id: u256, feature_key: str, initial_attrs: dict[str, str], geometry_digest: str) -> u256:
-        # CLI 0.39.x may encode a declared $dict as flat pseudo-JSON text.
-        # Accept only a bounded, flat key:value representation; all keys still
-        # pass the same allowlist below. Browser/native clients send a real dict.
-        if isinstance(initial_attrs, str):
-            raw=initial_attrs.strip()
-            if not raw.startswith("{") or not raw.endswith("}"): raise Exception("attribute object required")
-            parsed_attrs={}
-            for pair in raw[1:-1].split(","):
-                if not pair: continue
-                parts=pair.split(":", 1)
-                if len(parts)!=2: raise Exception("invalid attribute entry")
-                parsed_attrs[parts[0].strip().strip('"')]=parts[1].strip().strip('"')
-            initial_attrs=parsed_attrs
+        if not isinstance(initial_attrs, dict): raise Exception("attribute object required")
         initial_attrs_json=json.dumps(initial_attrs, sort_keys=True)
         layer=self._layer(layer_id)
         if gl.message.sender_address != layer.steward: raise Exception("only the layer steward may register features")
@@ -207,6 +195,7 @@ class AtlasMerge(gl.Contract):
         if result.get("attribute") != cluster.attribute or result.get("value") != cluster.value: raise Exception("consensus may only settle submitted attribute and value")
         if result.get("source_accessible") not in (True, False) or result.get("feature_match") not in ("MATCH", "MISMATCH", "UNCLEAR") or result.get("support") not in ("SUPPORTED", "CONTRADICTED", "MIXED", "INSUFFICIENT"): raise Exception("invalid consensus fields")
         if not result.get("source_accessible") and result.get("decision") == "ACCEPT_DELTA": raise Exception("unavailable evidence cannot accept")
+        if result.get("feature_match") != "MATCH" and result.get("decision") == "ACCEPT_DELTA": raise Exception("feature mismatch cannot accept")
         if result.get("support") != "SUPPORTED" and result.get("decision") == "ACCEPT_DELTA": raise Exception("unsupported evidence cannot accept")
         reason=result.get("reason", "")
         reason=self._clean_text(reason, MAX_REASON, "consensus reason")
@@ -240,7 +229,7 @@ class AtlasMerge(gl.Contract):
                 text=body.decode("utf-8")
                 if len(text)==0 or len(text)>MAX_EVIDENCE: return {"ok":False,"kind":"EMPTY","text":""}
                 if "sha256:"+hashlib.sha256(text.encode("utf-8")).hexdigest()!=expected_digest: return {"ok":False,"kind":"DIGEST_MISMATCH","text":""}
-                return {"ok":True,"kind":"OK","text":text[:MAX_PAGE_CONTEXT]}
+                return {"ok":True,"kind":"OK","text":text}
             except Exception:
                 return {"ok":False,"kind":"UNAVAILABLE","text":""}
         # Bounded, independently validated semantic judgment. Evidence and
@@ -280,6 +269,12 @@ class AtlasMerge(gl.Contract):
         for i in range(offset, end): out.append(self.layers[i+1])
         return out
     @gl.public.view
+    def get_layer_ids(self, offset: u256, limit: u256) -> list[u256]:
+        if limit>32: raise Exception("limit must be at most 32")
+        out=[]; end=min(self.layer_count, offset+limit)
+        for i in range(offset, end): out.append(i+1)
+        return out
+    @gl.public.view
     def get_layer_features(self, layer_id: u256, offset: u256, limit: u256) -> list[Feature]:
         self._layer(layer_id)
         if limit>32: raise Exception("limit must be at most 32")
@@ -287,10 +282,23 @@ class AtlasMerge(gl.Contract):
         for i in range(offset, end): out.append(self.features[self.layer_feature_ids[str(layer_id)+":"+str(i)]])
         return out
     @gl.public.view
+    def get_layer_feature_ids(self, layer_id: u256, offset: u256, limit: u256) -> list[u256]:
+        layer=self._layer(layer_id)
+        if limit>32: raise Exception("limit must be at most 32")
+        out=[]; end=min(layer.feature_count, offset+limit)
+        for i in range(offset, end): out.append(self.layer_feature_ids[str(layer_id)+":"+str(i)])
+        return out
+    @gl.public.view
     def get_clusters(self, offset: u256, limit: u256) -> list[Cluster]:
         if limit>32: raise Exception("limit must be at most 32")
         out=[]; end=min(self.cluster_count, offset+limit)
         for i in range(offset, end): out.append(self.clusters[i+1])
+        return out
+    @gl.public.view
+    def get_cluster_ids(self, offset: u256, limit: u256) -> list[u256]:
+        if limit>32: raise Exception("limit must be at most 32")
+        out=[]; end=min(self.cluster_count, offset+limit)
+        for i in range(offset, end): out.append(i+1)
         return out
     @gl.public.view
     def get_layer_clusters(self, layer_id: u256, offset: u256, limit: u256) -> list[Cluster]:
