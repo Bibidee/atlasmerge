@@ -433,3 +433,20 @@ Copy this block for every meaningful work unit:
 
 **Next exact action**
 - Deploy the frontend-only diagnostics release and have the user select MetaMask then retry Create Layer; record the complete displayed error verbatim.
+
+### 2026-08-24 20:15 +01:00 — Generic injected-wallet write path
+
+**Changed**
+- No contract files were changed.
+- Removed the SDK `connect("studionet")` call from the browser write path. That helper requests a MetaMask Snap, but is not required for StudioNet's standard EIP-1193 `eth_sendTransaction` path.
+- Added generic EIP-1193 StudioNet add/switch handling for the selected provider, preserving the existing diagnostic checkpoints and error serialization.
+
+**Verification**
+- TypeScript and ESLint passed; Vitest: 3 passed. Production build completed through TypeScript and static-page generation locally.
+
+**Reality check**
+- Rabby has not yet performed a real browser write after this source change, so wallet compatibility is implementation-supported but not live-proven.
+- The canonical contract remains `0xd0C073A97D80087439920D2bEe6D5580707E38e2`; it was not redeployed.
+
+**Next exact action**
+- Deploy this frontend-only generic-provider change, then retry Create Layer with Rabby and capture the transaction rail result.
