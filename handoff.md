@@ -529,3 +529,15 @@ Copy this block for every meaningful work unit:
 - Public alias `https://atlasmerge.vercel.app` now points to that deployment and returned HTTP 200 after promotion.
 - This release changed frontend finality classification only. The Intelligent Contract was not changed or redeployed.
 - Safe next user action: retry the Report transaction. The UI will preserve the transaction hash and will no longer label a finalized receipt as rollback unless explicit execution-failure evidence is present.
+
+### 2026-08-25 — Live Cluster 1 unavailable-evidence proof verified
+
+- Canonical contract readback: `get_cluster(1)` is terminal status `6` / `INSUFFICIENT_EVIDENCE`, with `reason_code=SOURCE_UNAVAILABLE`, rationale `Public evidence was unavailable`, and the supplied digest `sha256:ff3e66d30cacf447f2a2be64b86508404d56ea6c98306e15c49df1e3a8cfc701`.
+- `get_feature(1)` remains `national-arts-theatre-iganmu`, name `National Arts Theatre`, version `1`; `get_feature_history(1,0,32)` and `preview_related(1,8)` both return `[]`. No Delta/history/VecDB entry was created. Cluster 1 will not be modified or retried.
+- Next work unit: publish the exact evidence bytes as a frontend static asset, prove the deployed URL via GenVM web access, and harden terminal-cluster UI behavior without changing the contract.
+
+### 2026-08-25 — Terminal cluster UI hardening and evidence asset staged
+
+- Copied `evidence/national-theatre-rename.txt` byte-for-byte to `apps/web/public/evidence/national-theatre-rename.txt`; both are 1,099 bytes with digest `sha256:ff3e66d30cacf447f2a2be64b86508404d56ea6c98306e15c49df1e3a8cfc701`.
+- Cluster detail now reads the target feature, displays the human-readable status and actual current attribute value in BEFORE, and renders no adjudication action once status is terminal; only status `PENDING` can call `adjudicate_cluster`.
+- Added regression tests for status labels, terminal-button gating, and current-value rendering. Frontend tests: 37 passed; typecheck and lint completed successfully.
