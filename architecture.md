@@ -2,7 +2,7 @@
 
 ## 1. Architectural thesis
 
-AtlasMerge turns a noisy stream of public map observations into a canonical, versioned map-delta ledger. Reports are collected and clustered off-chain. GenLayer is invoked only when a cluster is ready to become an authoritative change: validators inspect public evidence, the existing feature record and semantically related prior deltas before agreeing on the canonical map mutation.
+AtlasMerge turns public map observations into a canonical, versioned map-delta ledger. There is no hosted application backend or database: participants prepare public evidence in their browser or external public tooling. GenLayer is invoked when a bounded cluster is ready to become authoritative; validators fetch the evidence, inspect the existing feature and scoped prior deltas, then agree on the canonical mutation.
 
 The architecture preserves one boundary:
 
@@ -55,8 +55,8 @@ Embed accepted deltas from a normalized sentence: geohash, feature type, canonic
 
 | Data | Source of truth | Mutable | Consensus input |
 |---|---|---:|---:|
-| Draft/high-volume work | Off-chain service | Yes | No, until frozen |
-| Frozen public artifact | Artifact store + chain digest | No | Yes |
+| Draft/high-volume work | Participant browser/public tooling | Yes | No, until submitted |
+| Public evidence response | HTTPS origin + verified chain digest | Origin-controlled | Yes |
 | Rules/charter/rubric version | Contract | Versioned | Yes |
 | VecDB pointer/vector | Contract | Append by invariant | Yes, bounded retrieval |
 | Final status/receipt | Contract | Terminal/versioned | N/A; output |
@@ -78,8 +78,10 @@ Embed accepted deltas from a normalized sentence: geohash, feature type, canonic
 - submit_cluster(layer_id, feature_id, proposed_attribute, proposed_value, report_bundle_url, bundle_digest, coarse_geohash) -> cluster_id
 - adjudicate_cluster(cluster_id) -> decision
 - cancel_cluster(cluster_id)
-- get_feature(feature_id)
+- get_layer(layer_id), get_layers(offset, limit)
+- get_feature(feature_id), get_layer_features(layer_id, offset, limit)
 - get_cluster(cluster_id)
+- get_clusters(offset, limit), get_feature_clusters(feature_id, offset, limit)
 - get_feature_history(feature_id, offset, limit)
 - preview_related(cluster_id, k)
 
@@ -130,19 +132,9 @@ Decision prompt fields:
 
 The architecture deliberately separates **selection** from **judgment**. A memory hit is never enough to authorize the final transition.
 
-## 9. Off-chain API/service boundary
+## 9. No hosted API boundary
 
-Expected endpoints/categories:
-
-- `POST /api/v1/auth/challenge`
-- `POST /api/v1/reports`
-- `POST /api/v1/reports/:id/evidence`
-- `GET /api/v1/clusters?bbox=`
-- `POST /api/v1/clusters/build`
-- `POST /api/v1/clusters/:id/finalize-bundle`
-- `GET /api/v1/features/:key`
-
-If this project is frontend-first/no persistent database, those endpoints are limited metadata/cache proxies rather than an authority.
+AtlasMerge has no `POST /api/*` application API, backend, or database. The Next.js frontend reads directly from the StudioNet contract and submits injected-wallet transactions. A public HTTPS evidence origin is independently fetched by validators; it is not an AtlasMerge-controlled service.
 
 ### Artifact freeze flow
 

@@ -1,17 +1,48 @@
 # AtlasMerge
 
-A consensus merge layer for crowdsourced maps. AtlasMerge has two deployable layers only: this Next.js frontend and the StudioNet Intelligent Contract in `contracts/atlasmerge.py`.
+AtlasMerge is a user-facing GenLayer consensus layer for bounded changes to crowdsourced-map features. A submitted cluster proposes exactly one attribute change for one versioned feature; GenLayer validators fetch its public evidence and decide whether the delta is canonical.
 
-## Status
+## Live project
 
-Implementation is ready for local frontend verification. No StudioNet contract address or hosted site is claimed until deployment and execution proof are recorded in `handoff.md`.
+- App: https://atlasmerge.vercel.app
+- Network: GenLayer StudioNet (chain ID 61999)
+- Current production contract: recorded in `handoff.md`. Contract upgrades require a new deployment and frontend configuration update.
 
-## Run
+## Evidence and consensus
+
+Evidence must be a direct HTTPS URL. The submitter supplies `sha256:<64 lowercase hex>` over the exact UTF-8 response text. During adjudication every validator fetches the URL, bounds the response, verifies the digest, and treats fetched text as untrusted data. An unavailable, malformed, oversized, or digest-mismatched source resolves fail-closed as `INSUFFICIENT_EVIDENCE`; it never mutates the feature.
+
+Validators only settle the submitted attribute and value. Feature versions prevent stale writes. Accepted deltas append immutable history; rejection, split, insufficient evidence, cancellation, and undetermined consensus do not change feature attributes.
+
+VecDB stores accepted-delta precedent. It is bounded retrieval context filtered by layer and coarse geohash, never authorization or an automatic verdict. Only retrieved, eligible precedent IDs may be persisted.
+
+## User workflow
+
+1. A layer steward creates a layer and registers a feature.
+2. A user submits a one-attribute cluster with HTTPS evidence, digest, and geohash.
+3. Any wallet may trigger adjudication.
+4. Browse authoritative clusters, feature history, evidence, rationale, and eligible precedent from contract views.
+
+## Development
 
 ```powershell
-Copy-Item .env.example .env.local
+Copy-Item .env.example apps/web/.env.local
 npm install --prefix apps/web
-npm run dev
+npm run test
+npm run typecheck
+npm run lint
+npm run build
 ```
 
-Run checks with `npm run test`, `npm run typecheck`, `npm run lint`, and `npm run build`. Configure `NEXT_PUBLIC_ATLASMERGE_CONTRACT` only after a successful StudioNet deployment. The UI deliberately displays an unavailable state without it.
+`NEXT_PUBLIC_ATLASMERGE_CONTRACT` must be set to a successful StudioNet deployment. The frontend uses `genlayer-js` clients for reads, injected-wallet writes, StudioNet switching, and finalized receipt checks; finality alone is never treated as success.
+
+## Structure
+
+- `contracts/atlasmerge.py` — intelligent contract and authoritative state.
+- `apps/web` — Next.js injected-wallet application.
+- `tests/direct` — direct contract source invariants; use the GenLayer test suite/Direct Mode for runtime contract behavior.
+- `handoff.md` — exact deployment and lifecycle evidence.
+
+## Known limitation
+
+Public webpages can change or vary between validators. AtlasMerge compares stable structured decision fields and fails closed where evidence or consensus is unavailable. Production deployment evidence and any observed undetermined transactions are documented rather than hidden in `handoff.md`.
