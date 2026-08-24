@@ -495,3 +495,9 @@ Copy this block for every meaningful work unit:
 - Frontend tests (13), typecheck, local production build, and Vercel production build passed.
 - Git commit: `4e2581b`; Vercel deployment: `dpl_FV6krVjh2ciC1GQtuojaRJgTVEhu`; `https://atlasmerge.vercel.app` points to this deployment.
 - Live seeding: `create_layer` succeeded on canonical contract with tx `0x83ec22599554a81d1f14140e250b56a7648f69a297fc87a5ba1f4dbd92f8c84f`, returning layer 1. CLI feature writes were intentionally rejected by the contract because the CLI serialized the dictionary as text (`attribute object required`); no feature/cluster was falsely claimed.
+### 2026-08-24 22:02 +01:00 — Verdict matrix and live-state verification
+
+- Expanded Direct Mode coverage to all four consensus envelope verdicts: `ACCEPT_DELTA`, `REJECT_DELTA`, `SPLIT_CLUSTER`, and `INSUFFICIENT_EVIDENCE`, plus invalid acceptance gates and existing authorization/version/geometry checks.
+- Contract/source suite result: **11 passed**.
+- Live canonical contract readback: layer 1 exists with bbox `{"max_lat_e6":6650000,"max_lng_e6":3550000,"min_lat_e6":6450000,"min_lng_e6":3250000}`; `get_layer_features(1,0,32)` returns `[]`.
+- CLI feature attempts `0x6773cb…d6cb4` and `0x4cbeca…a3d5c8` finalized with contract errors because the CLI sent the attribute dictionary as text. They changed no state. Native injected-wallet signing remains required for feature → cluster → adjudication live population.
