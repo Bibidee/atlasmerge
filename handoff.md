@@ -508,3 +508,16 @@ Copy this block for every meaningful work unit:
 - Frontend deployment: `dpl_C93zxF8aM3GsdsNoDbBma65vGQCU`; `https://atlasmerge.vercel.app` points to it. Contract was not redeployed.
 - Live `get_layer(1)` result: steward `0x79b3ecbe6a65bee93b2fcda78e6909892671507f`, feature count 0, version 1, canonical E6 bbox persisted.
 - Steward comparison: this does **not** match the currently supplied wallet `0xc94a…3761`; that wallet is not authorized to register features on Layer 1. Do not attempt feature registration from that account.
+
+### 2026-08-24 — Receipt classification hardening in progress
+
+- Production observation: a Rabby `register_feature` write on Layer 3 / Feature 1 finalized with StudioNet consensus **Accepted**, GenVM execution **SUCCESS**, and contract return value `1`, but the browser labeled it as a rollback because the SDK receipt omitted the expected `txExecutionResultName` representation.
+- Scope: frontend-only. Do not alter or redeploy the Intelligent Contract or recreate the already-successfully-registered feature.
+- Planned fix: classify success only from explicit SDK/StudioNet success evidence, classify rollback only from explicit failure evidence, preserve hashes, and use an unknown-finalized state plus authoritative readback when execution metadata is incomplete. Add regression coverage and redeploy the frontend.
+
+### 2026-08-24 — Receipt classification fix implemented
+
+- Frontend `contractWrite` now recognizes `FINISHED_WITH_RETURN`, numeric SDK execution result `1`, and nested StudioNet/leader `SUCCESS`; it recognizes rollback only from explicit `FINISHED_WITH_ERROR`, numeric error result `2`, nonzero debug `result_code`, or equivalent failure evidence.
+- Finalized receipts without execution evidence now fetch the full transaction and debug trace; if still unknown they surface `finalized_unknown` while preserving the transaction hash and prompting authoritative state refresh, never falsely reporting rollback.
+- Regression coverage now includes SDK success, StudioNet leader success, explicit error, nonzero trace failure, missing execution data, and terminal-state preservation. Frontend tests: 30 passed; typecheck and lint passed.
+- Production build passed with Next.js 16.3.2. No contract source or deployment files were changed.

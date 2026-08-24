@@ -1,16 +1,17 @@
 import {createClient} from "genlayer-js";
 import {studionet} from "genlayer-js/chains";
-import {ExecutionResult,TransactionStatus,type TransactionHash} from "genlayer-js/types";
+import {TransactionStatus,type TransactionHash} from "genlayer-js/types";
 import {injectedProvider,normalizeWalletError,requireStudioNet,selectedWallet,connectStudioNet} from "./client";
 import {config} from "./config";
 import type {TxStage,WriteFailureCode,WriteResult} from "./types";
 import {u256Id} from "./ids";
+import {classifyExecution} from "./execution";
 
 export class AtlasWriteError extends Error {
   constructor(message:string,public readonly stage:TxStage,public readonly code:WriteFailureCode,public readonly hash?:string,options?:{cause?:unknown}){super(message,options);this.name="AtlasWriteError";}
 }
 export const isAtlasWriteError=(error:unknown):error is AtlasWriteError=>error instanceof AtlasWriteError;
-export const isTerminalWriteStage=(stage:TxStage)=>["success","timeout","undetermined","rollback","cancelled"].includes(stage);
+export const isTerminalWriteStage=(stage:TxStage)=>["success","timeout","undetermined","finalized_unknown","rollback","cancelled"].includes(stage);
 type StageWriter=(stage:TxStage,hash?:string,message?:string)=>void;
 function normalizeWriteArgs(method:string,args:unknown[]):unknown[]{const positions:Record<string,number[]>={register_feature:[0],submit_cluster:[0,1],cancel_cluster:[0],adjudicate_cluster:[0]};return args.map((value,index)=>positions[method]?.includes(index)&&typeof value==="string"?u256Id(value):value);}
 const address=()=>{if(!config.isConfigured)throw new Error("UNAVAILABLE_READ: contract address is not configured");return config.contractAddress as `0x${string}`};
@@ -30,7 +31,17 @@ export async function contractWrite(method:string,args:unknown[],setStage:StageW
     checkpoint="writeContract";trace("submitted",`writeContract: submitted ${hash}`,hash);trace("pending","consensus pending: waiting for FINALIZED",hash);let receipt;
     try{receipt=await readClient().waitForTransactionReceipt({hash,status:TransactionStatus.FINALIZED,interval:5_000,retries:90});}catch{const current=await readClient().getTransaction({hash}).catch(()=>undefined);if(current?.statusName===TransactionStatus.UNDETERMINED){const message="Validators did not converge; the contract state was not changed.";trace("undetermined",message,hash);return {stage:"undetermined",hash,code:"UNDETERMINED"};}const message="The transaction remains pending after the polling window.";trace("timeout",message,hash);return {stage:"timeout",hash,code:"TIMEOUT"};}
     if(receipt.statusName===TransactionStatus.UNDETERMINED){const message="Validators did not converge; the contract state was not changed.";trace("undetermined",message,hash);return {stage:"undetermined",hash,code:"UNDETERMINED"};}
-    if(receipt.txExecutionResultName!==ExecutionResult.FINISHED_WITH_RETURN){const message="The finalized GenVM execution rolled back; no state was changed.";trace("rollback",message,hash);return {stage:"rollback",hash,code:"GENVM_ROLLBACK"};}
+    let execution=classifyExecution(receipt);
+    if(execution==="unknown"){
+      const fullTransaction=await readClient().getTransaction({hash}).catch(()=>undefined);
+      execution=classifyExecution(fullTransaction);
+      if(execution==="unknown"){
+        const traceResult=await readClient().debugTraceTransaction({hash}).catch(()=>undefined);
+        execution=classifyExecution(traceResult);
+      }
+    }
+    if(execution==="failure"){const message="The finalized GenVM execution rolled back; no state was changed.";trace("rollback",message,hash);return {stage:"rollback",hash,code:"GENVM_ROLLBACK"};}
+    if(execution==="unknown"){const message="Finalized; execution details were unavailable, so authoritative state is being refreshed.";trace("finalized_unknown",message,hash);return {stage:"finalized_unknown",hash,code:"FINALIZED_UNKNOWN"};}
     trace("success","Finalized; GenVM execution successful.",hash);return {stage:"success",hash};
   }catch(error){if(isAtlasWriteError(error))throw error;const message=normalizeWalletError(error,checkpoint);const code=codeFor(error,checkpoint);const stage:TxStage=code==="USER_REJECTED"?"cancelled":"error";console.error("[AtlasMerge write failure]",{checkpoint,error,submittedHash});setStage(stage,submittedHash,message);throw new AtlasWriteError(message,stage,code,submittedHash,{cause:error});}
 }
