@@ -1,0 +1,5 @@
+export type Status = "PENDING"|"ACCEPTED"|"REJECTED"|"SPLIT_REQUIRED"|"INSUFFICIENT_EVIDENCE";
+export type Feature = { layer_id:string; feature_key:string; attrs_json:string; geometry_digest:string; version:string; active:boolean };
+export type Cluster = { submitter:string; layer_id:string; feature_id:string; attribute:string; value:string; bundle_url:string; bundle_digest:string; geohash:string; base_version:string; status:number; related_json:string; rationale:string };
+export type Related = { delta_id:string; distance:string; status?:string; summary?:string };
+export type TxStage = "idle"|"signing"|"submitted"|"pending"|"success"|"rollback"|"error";

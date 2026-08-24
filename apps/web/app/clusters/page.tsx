@@ -1,0 +1,2 @@
+import {Shell} from "../../components/shell";import {MapDesk} from "../../components/map-desk";import {Unavailable} from "../../components/live";
+export default function Clusters(){return <Shell><MapDesk title="Cluster board"/><section className="table-sheet"><h1>Cluster review board</h1><Unavailable message="Cluster enumeration is intentionally not inferred locally. Configure a deployed contract to inspect authoritative clusters by ID."/></section></Shell>}

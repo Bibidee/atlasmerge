@@ -1,0 +1,2 @@
+"use client";
+import {config} from "../lib/genlayer/config"; export function Provenance(){return <p className="provenance"><i/> {config.isConfigured?"LIVE CONTRACT · STUDIO NET":"CONTRACT UNAVAILABLE · configure NEXT_PUBLIC_ATLASMERGE_CONTRACT"}</p>}; export function Unavailable({message}:{message:string}){return <section className="empty"><h2>Map ledger unavailable</h2><p>{message}</p><p>AtlasMerge never substitutes fabricated records for a failed or unconfigured live read.</p></section>}

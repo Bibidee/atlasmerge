@@ -1,0 +1,2 @@
+import {Shell} from "../components/shell";import {MapDesk} from "../components/map-desk";import {Provenance} from "../components/live";
+export default function Home(){return <Shell><MapDesk/><section className="map-strip"><Provenance/><h1>Canonical changes, surveyed in public.</h1><p>Select a feature to inspect its versioned ledger. Reports remain off-chain until a bounded cluster is submitted for consensus.</p><div className="key"><b className="hatch"/> accepted delta <b className="dot"/> candidate cluster</div></section></Shell>}

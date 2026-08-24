@@ -1,0 +1,29 @@
+{
+  "name": "@atlasmerge/web",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "genlayer-js": "1.1.8",
+    "next": "16.3.2",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^5.1.1",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.2",
+    "genlayer": "^0.39.2",
+    "typescript": "^5",
+    "vitest": "^4.0.18"
+  }
+}

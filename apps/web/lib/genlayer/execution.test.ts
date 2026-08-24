@@ -1,0 +1,2 @@
+import { describe, expect, it } from "vitest"; import { executionSucceeded } from "./execution";
+describe("execution result interpretation",()=>{it("does not call a finalized rollback successful",()=>expect(executionSucceeded({status:"FINALIZED",result:"ROLLBACK"})).toBe(false));it("accepts explicit success",()=>expect(executionSucceeded({status:"FINALIZED",execution:"SUCCESS"})).toBe(true));it("fails closed for unknown receipt",()=>expect(executionSucceeded({status:"FINALIZED"})).toBe(false));});
