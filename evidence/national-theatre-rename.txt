@@ -1,0 +1,18 @@
+AtlasMerge production evidence: National Theatre rename
+
+Target feature: national-arts-theatre-iganmu
+Location: Iganmu, Lagos
+Coordinates: 6.473333, 3.372222
+
+Current recorded name: National Arts Theatre
+Proposed name: Wole Soyinka Centre for Culture and the Creative Arts
+
+The official National Theatre Our Story source states that the fully renovated complex was officially commissioned and re-dedicated on 1 October 2025 as the Wole Soyinka Centre for Culture and the Creative Arts. It also identifies the National Theatre as a cultural landmark located at Iganmu, Lagos.
+
+The official National Theatre Wole Soyinka Centre source states that the edifice was formerly known as the National Theatre and was renamed the Wole Soyinka Centre in honour of Wole Soyinka.
+
+Official evidence sources:
+- Our Story: https://nationaltheatre.gov.ng/ourstory
+- Wole Soyinka Centre: https://nationaltheatre.gov.ng/wolesoyinkacentre
+
+This file records public evidence for one bounded proposed name change to the named feature. It is evidence only; no AtlasMerge transaction is submitted by publishing this file.
