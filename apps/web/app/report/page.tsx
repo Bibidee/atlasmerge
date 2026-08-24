@@ -3,6 +3,7 @@ import {useEffect,useState} from "react";
 import {Shell} from "../../components/shell";
 import {TransactionRail} from "../../components/transaction-rail";
 import {contractWrite} from "../../lib/genlayer/contract";
+import {u256Id} from "../../lib/genlayer/ids";
 import {getLayerEntries,getLayerFeatureEntries} from "../../lib/genlayer/data-source";
 import type {Feature,Layer,TxStage} from "../../lib/genlayer/types";
 const attributes=["name","status","access","category","direction","geometry_note"];
