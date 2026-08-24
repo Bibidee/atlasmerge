@@ -304,6 +304,10 @@ Copy this block for every meaningful work unit:
 - The CLI serializes its dict argument as pseudo-JSON, so this lifecycle proves contract behavior but does not prove a browser-native object write. The frontend itself sends objects through `genlayer-js`; injected-wallet signing still needs an available user wallet session.
 - No accepted, evidence-backed mutation is claimed. The verified outcome is deliberately fail-closed.
 
+**Browser verification**
+- The public `/clusters` page was rendered after the alias change and displayed `Cluster 1`, `status → CLOSED`, status `6`, and the authoritative evidence URL.
+- Clicking `Connect wallet` produced `No injected wallet is available`; no account request or transaction could occur in this browser session. This is a wallet-session prerequisite, not an application failure.
+
 ### 2026-08-23 19:10 +01:00 — Blueprint pack created
 
 **Goal**
