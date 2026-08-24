@@ -86,6 +86,19 @@ def test_accept_envelope_requires_exact_match_and_supported_evidence(deployed):
         contract._validate_envelope(__import__("json").dumps(bad_reason), cluster, [])
 
 
+def test_all_consensus_verdicts_are_bounded_and_fail_closed(deployed):
+    _, contract, _, _ = deployed
+    create_layer(contract)
+    contract.register_feature(1, "tower", {"status": "OPEN"}, ZERO)
+    contract.submit_cluster(1, 1, "status", "CLOSED", "https://example.com/evidence", ZERO, "u09tun")
+    cluster = contract.get_cluster(1)
+    common = {"attribute": "status", "value": "CLOSED", "source_accessible": True, "feature_match": "MATCH", "support": "SUPPORTED", "memory_ids": []}
+    for decision, reason in (("REJECT_DELTA", "CONTRADICTED"), ("SPLIT_CLUSTER", "MIXED_EVIDENCE"), ("INSUFFICIENT_EVIDENCE", "INSUFFICIENT_SUPPORT")):
+        envelope = dict(common, decision=decision, reason_code=reason)
+        result = contract._validate_envelope(__import__("json").dumps(envelope), cluster, [])
+        assert result["decision"] == decision
+
+
 def test_pagination_views_return_authoritative_ids(deployed):
     _, contract, _, _ = deployed
     create_layer(contract)
