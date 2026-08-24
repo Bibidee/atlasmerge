@@ -2,7 +2,7 @@
 
 ## Current canonical deployment
 
-- Contract: `0x93F35446B739874E2cf154E58Bae4fC803E3017D`.
+- Contract: `0x874a677F561F14D4F9722275FA1f46D9D12c5590`.
 - Deployment tx: `0xf1e27fe32a9165e70dbe4a26c9e082cb1b5df94f2ed4ad3798bc6f74a99f6665` (majority agreement; leader GenVM success).
 - Contract source commit: `fddd0a94bcfe48eb5347aa79e2cb94d4ceadcd8f`; SHA-256 `A1D543883069465F2434DE084C3ACB2BB6BD40F9EC076628B8C998BA9EC84A7D`.
 - Production app: `https://atlasmerge.vercel.app` is aliased to `dpl_4y7ArZ198k1LoECq3fGunmisRAab` and configured for that address.
@@ -474,3 +474,14 @@ Copy this block for every meaningful work unit:
 
 **Next exact action**
 - Commit the frozen changes, deploy the new contract once, then update Vercel to its address.
+### 2026-08-24 21:21 +01:00 — Fixed-point ABI release
+
+- Replaced floating-point/object bounding-box calldata with four signed E6 integer arguments: `min_lat_e6`, `max_lat_e6`, `min_lng_e6`, and `max_lng_e6`.
+- Browser conversion is decimal-string based and rejects precision beyond six places, reversed boxes, and geographic range violations before simulation.
+- Added typed terminal write results that preserve transaction hashes for success, timeout, undetermined consensus, and finalized GenVM rollback.
+- Frontend verification: 13 Vitest assertions passed; TypeScript, ESLint, and the production Next.js build passed.
+- Contract verification: 10 source/Direct Mode tests executed and passed locally; the Windows-only loader workaround is scoped to its premature temp-file unlink. CI remains blocking on Linux.
+- Source commit: `d968383639d8ecf87e260a0c8f5665344ecf2ab1`.
+- Contract source SHA-256: `ADEB7B1DF93AA6C1592D8734A2A8DD14D7DD9677F597AC694F3B55D438BAD51B`.
+- Deployment transaction: `0x11b39028660af8f39123221562409d2d1235976052acfdf4556f7f87754383ce`.
+- Canonical contract: `0x874a677F561F14D4F9722275FA1f46D9D12c5590`.
