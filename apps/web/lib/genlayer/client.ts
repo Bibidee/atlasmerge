@@ -1,11 +1,12 @@
 import { STUDIO_CHAIN_ID } from "./config";
 export type EthereumProvider = { request(args:{method:string;params?:unknown[]}): Promise<unknown>; on?(event:string, fn:(value: unknown)=>void):void; removeListener?(event:string,fn:(value:unknown)=>void):void; isMetaMask?:boolean };
 export type WalletOption={id:string;name:string;rdns:string;provider:EthereumProvider}; type Announce={detail:{info:{name:string;rdns:string;uuid:string};provider:EthereumProvider}};
-let selectedId=""; let discovered:WalletOption[]=[];
+const WALLET_SELECTION_KEY="atlasmerge.selectedWallet"; let selectedId=""; let discovered:WalletOption[]=[];
 const identifier=(provider:EthereumProvider,info?:{uuid?:string;name?:string;rdns?:string})=>info?.uuid??info?.rdns??(provider.isMetaMask?"metamask":"injected");
 export function discoverWallets():WalletOption[]{if(typeof window==="undefined")return [];const add=(provider:EthereumProvider,info?:{uuid?:string;name?:string;rdns?:string})=>{const id=identifier(provider,info);if(!discovered.some(item=>item.id===id))discovered=[...discovered,{id,name:info?.name??(provider.isMetaMask?"MetaMask":"Injected wallet"),rdns:info?.rdns??(provider.isMetaMask?"io.metamask":"unknown"),provider}]};const announce=(event:Event)=>{const detail=(event as CustomEvent<Announce["detail"]>).detail;if(detail?.provider)add(detail.provider,detail.info)};window.addEventListener("eip6963:announceProvider",announce);window.dispatchEvent(new Event("eip6963:requestProvider"));if(window.ethereum)add(window.ethereum);return discovered;}
 export function walletOptions(){return discovered;}
-export function selectWallet(id:string){selectedId=id;}
+export function selectWallet(id:string){selectedId=id;if(typeof window!=="undefined"){try{window.sessionStorage.setItem(WALLET_SELECTION_KEY,id)}catch{}}}
+export function restoreSelectedWallet(){if(typeof window==="undefined")return "";try{selectedId=window.sessionStorage.getItem(WALLET_SELECTION_KEY)??""}catch{}return selectedId;}
 export function selectedWallet():WalletOption|null{const all=discoverWallets();return all.find(item=>item.id===selectedId)??all.find(item=>item.provider.isMetaMask)??all[0]??null;}
 export function injectedProvider():EthereumProvider|null{return selectedWallet()?.provider??null;}
 export async function walletChain(provider: EthereumProvider) { const id=await provider.request({method:"eth_chainId"}); return typeof id === "string" ? Number.parseInt(id,16) : 0; }
