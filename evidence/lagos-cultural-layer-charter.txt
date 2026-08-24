@@ -1,0 +1,22 @@
+AtlasMerge Lagos Cultural Layer Charter
+
+Purpose
+
+This layer records real cultural and public-interest venues in Lagos, Nigeria. It is bounded to the following geographic rectangle:
+
+Minimum latitude: 6.45
+Maximum latitude: 6.65
+Minimum longitude: 3.25
+Maximum longitude: 3.55
+
+Scope and evidence
+
+Every feature must identify a real Lagos location inside this rectangle and must be backed by public, directly inspectable evidence. Evidence should be an accessible HTTPS source or another public source that validators can independently inspect. A geometry reference must be accompanied by its exact SHA-256 digest. Invented locations, unsupported claims, private-only sources, and evidence outside the declared bounds are not eligible.
+
+Adjudication rule
+
+AtlasMerge adjudicates one bounded attribute change at a time for one versioned feature. Each proposed change must name the target feature, the single attribute, the proposed value, the evidence URL and digest, and the relevant geohash. A change is authoritative only when the GenLayer consensus process accepts the evidence-backed mutation; otherwise it remains rejected, split, insufficient, or otherwise non-authoritative.
+
+Stewardship
+
+The wallet that creates this layer is its steward and is responsible for registering features that satisfy this charter. Registration and later mutations remain subject to the contract's authorization, version, evidence, digest, and fail-closed validation rules.
