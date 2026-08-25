@@ -316,7 +316,7 @@ Authorization is intentionally narrow:
 
 ## 9. VecDB design
 
-Embed accepted deltas from a normalized sentence: geohash, feature type, canonical feature name, changed attribute, old value, new value and bounded reason. Retrieval is first deterministically filtered by layer and coarse geohash, then semantic KNN finds similar past changes. This avoids nearest-vector matches from distant places becoming misleading context.
+Embed accepted deltas from a normalized sentence. Whole-store KNN is followed by deterministic accepted-Delta/layer/exact-geohash/attribute filtering; only eight eligible records are supplied as context, and the underlying scan is not bounded.
 
 ### Required storage pattern
 
@@ -354,7 +354,7 @@ class AtlasMerge(gl.Contract):
 
 The embedding text must be deterministic from contract fields. It should include the project-specific semantic keys described here and no volatile UI prose:
 
-Embed accepted deltas from a normalized sentence: geohash, feature type, canonical feature name, changed attribute, old value, new value and bounded reason. Retrieval is first deterministically filtered by layer and coarse geohash, then semantic KNN finds similar past changes. This avoids nearest-vector matches from distant places becoming misleading context.
+Embed accepted deltas from a normalized sentence. Whole-store KNN is followed by deterministic accepted-Delta/layer/exact-geohash/attribute filtering; only eight eligible records are supplied as context, and the underlying scan is not bounded.
 
 Before shipping, add a unit test that two semantically similar records from a forbidden namespace/version cannot influence the authoritative candidate set.
 

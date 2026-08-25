@@ -112,6 +112,36 @@ def test_canonical_verdict_ignores_redundant_llm_fields_and_keeps_ids_determinis
     envelope["memory_ids"]=[]
     assert contract._validate_envelope(__import__("json").dumps(envelope), cluster, [])["decision"] == "ACCEPT_DELTA"
 
+def test_non_numeric_knn_order_gets_canonical_receipt_ids(deployed):
+    vm, contract, _, _ = deployed
+    create_layer(contract); contract.register_feature(1, "tower", {"status":"OPEN"}, ZERO, "u09tun")
+    from _contract_atlasmerge import Delta
+    for did in (1, 2, 3):
+        contract.deltas[did]=Delta(1, 100+did, "status", "OPEN", "CLOSED", ZERO, did, "u09tun", "DIRECT_SUPPORT")
+    contract.delta_count=3
+    contract.submit_cluster(1, 1, "status", "CLOSED", "https://example.com/evidence", ZERO, "u09tun")
+    # Simulate relevance-ranked KNN output 3,1,2. Relevance order must stay
+    # available to semantic context while storage IDs become 1,2,3.
+    contract._memory_matches=lambda cluster, feature, k: [("3","0.1"),("1","0.2"),("2","0.3")]
+    body="The exact tower supports the submitted closure."
+    contract.clusters[1].bundle_digest=contract._sha256(body)
+    vm.mock_web("example\\.com/evidence", {"method":"GET","status":200,"body":body})
+    vm.mock_llm("CONTEXT_JSON", '{"verdict":"ACCEPT"}')
+    assert contract.adjudicate_cluster(1) == "ACCEPT_DELTA"
+    assert contract.get_cluster(1).related_json == '["1", "2", "3"]'
+    assert contract.get_feature(1).version == 2
+
+def test_memory_ids_reject_duplicates_and_foreign_precedents(deployed):
+    _, contract, _, _ = deployed
+    create_layer(contract); contract.register_feature(1, "tower", {"status":"OPEN"}, ZERO, "u09tun")
+    contract.submit_cluster(1, 1, "status", "CLOSED", "https://example.com/evidence", ZERO, "u09tun")
+    cluster=contract.get_cluster(1)
+    base=contract._derive_verdict("ACCEPT", cluster, True)
+    for ids in (["1","1"],["99"],["2"]):
+        base["memory_ids"]=ids
+        with pytest.raises(Exception, match="eligible precedent"):
+            contract._validate_envelope(__import__("json").dumps(base), cluster, ["1"])
+
 @pytest.mark.parametrize("status,body,digest,reason", [(404,"","sha256:"+"0"*64,"SOURCE_UNAVAILABLE"),(200,"wrong evidence","sha256:"+"0"*64,"DIGEST_MISMATCH")])
 def test_mocked_non_accept_evidence_paths_never_mutate(deployed,status,body,digest,reason):
     vm, contract, _, _ = deployed

@@ -47,7 +47,7 @@ Seed a small map with five venues, collect multiple off-chain closure/name-chang
 ## Phase 2 — Semantic memory
 
 - Add the project-specific `VectorPointer`.
-- Implement normalized embedding text exactly around: Embed accepted deltas from a normalized sentence: geohash, feature type, canonical feature name, changed attribute, old value, new value and bounded reason. Retrieval is first deterministically filtered by layer and coarse geohash, then semantic KNN finds similar past changes. This avoids nearest-vector matches from distant places becoming misleading context.
+- Implement normalized embedding text around accepted deltas. Whole-store KNN is followed by deterministic accepted-Delta/layer/exact-geohash/attribute filtering and an eight-record context cap; document whole-store scan cost as a scalability limitation.
 - Insert only invariant-approved records.
 - Implement bounded KNN + namespace/version filters.
 - Expose a preview view for testing/audit.

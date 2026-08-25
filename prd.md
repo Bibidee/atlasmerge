@@ -75,7 +75,7 @@ Map layer registry; feature IDs and current canonical attributes; candidate delt
 
 ### Semantic memory
 
-Embed accepted deltas from a normalized sentence: geohash, feature type, canonical feature name, changed attribute, old value, new value and bounded reason. Retrieval is first deterministically filtered by layer and coarse geohash, then semantic KNN finds similar past changes. This avoids nearest-vector matches from distant places becoming misleading context.
+Embed accepted deltas from a normalized sentence. Whole-store KNN is followed by deterministic accepted-Delta/layer/exact-geohash/attribute filtering, with semantic context capped at eight; whole-store scan cost is a documented scalability limitation.
 
 ### Consensus question
 

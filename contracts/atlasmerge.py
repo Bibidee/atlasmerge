@@ -272,8 +272,10 @@ class AtlasMerge(gl.Contract):
         cluster=self.clusters[cluster_id]; feature=self._feature(cluster.feature_id)
         if cluster.status != STATUS_PENDING: raise Exception("cluster is not pending")
         if feature.version != cluster.base_version: raise Exception("stale cluster; feature version changed")
-        eligible=self._eligible_memory(cluster, feature); eligible_ids=[]
-        for item in eligible: eligible_ids.append(json.loads(item)["delta_id"])
+        # Keep the relevance-ranked precedent list for semantic context, but
+        # use a separate numeric ordering for deterministic receipt/storage.
+        eligible=self._eligible_memory(cluster, feature)
+        eligible_ids=sorted((json.loads(item)["delta_id"] for item in eligible), key=lambda value: int(value))
         # Copy storage-backed values before entering nondeterministic execution.
         evidence_url=cluster.bundle_url; expected_digest=cluster.bundle_digest; submitted_attribute=cluster.attribute; submitted_value=cluster.value
         # Every validator fetches the actual submitted HTTPS text. The digest is

@@ -49,7 +49,7 @@ Map layer registry; feature IDs and current canonical attributes; candidate delt
 
 ### Contract-owned semantic memory
 
-Embed accepted deltas from a normalized sentence: geohash, feature type, canonical feature name, changed attribute, old value, new value and bounded reason. Retrieval is first deterministically filtered by layer and coarse geohash, then semantic KNN finds similar past changes. This avoids nearest-vector matches from distant places becoming misleading context.
+Embed accepted deltas from a normalized sentence. The available VecDB API performs whole-store KNN; deterministic accepted-Delta/layer/exact-geohash/attribute filters are applied afterward and semantic context is capped at eight. This prevents starvation but is a known whole-store scan scalability limitation.
 
 ## 4. Data ownership
 
@@ -118,7 +118,7 @@ sequenceDiagram
 
 Embedding inputs:
 
-Embed accepted deltas from a normalized sentence: geohash, feature type, canonical feature name, changed attribute, old value, new value and bounded reason. Retrieval is first deterministically filtered by layer and coarse geohash, then semantic KNN finds similar past changes. This avoids nearest-vector matches from distant places becoming misleading context.
+Embed accepted deltas from a normalized sentence. Whole-store KNN is followed by deterministic accepted-Delta/layer/exact-geohash/attribute filtering; only eight eligible records enter context, and the underlying scan is not bounded.
 
 Decision prompt fields (serialized once as bounded JSON; values are untrusted data, never a second format string):
 
