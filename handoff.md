@@ -2,7 +2,7 @@
 
 ## Current release state
 
-- Current final contract source commit: `43bbc95b5413f080174824a8c53da28c2ffaef79`; contract SHA-256 `32ea5e612fc8fdc0cf5e319d21df4ab28868ae0bdc945bb554ab3cc8190c64e8`. Repository HEAD is `eadfd5e` (workspace lockfile/hosting-only changes after deployment; contract bytes unchanged).
+- Current final contract source commit: `43bbc95b5413f080174824a8c53da28c2ffaef79`; contract SHA-256 `32ea5e612fc8fdc0cf5e319d21df4ab28868ae0bdc945bb554ab3cc8190c64e8`. Repository HEAD is `e084a4d` (workspace lockfile/CI/hosting-only changes after deployment; contract bytes unchanged).
 - New deployment: `0xfBBe4AFA3F196634d7d17951914bFA0AF427a2E4`; deployment transaction `0x0fd9ba8e4126969f35f550b17f45e667072103582c059c0f93b9b021eca8d6e5`. The prior `0x56A9...` deployment is superseded pending fresh lifecycle proof.
 - Production frontend deployment `dpl_btonCyJhysm47tKWpq37GjWM9JsD` (`https://web-j7x13jnn6-bibidees-projects.vercel.app`) is ready and aliased at https://atlasmerge.vercel.app; its bundle contains `0xfBBe4AFA3F196634d7d17951914bFA0AF427a2E4`. The GitHub-originating `atlasmerge` project still reports a failed check because its project-level install/output settings are not aligned with this monorepo; the manually published production alias is healthy.
 - Truthful status: local tests and source deployment are complete. Fresh adjudication is blocked by a StudioNet backend PostgreSQL `can't adapt type dict` failure in `gen_getContractCode`; no positive/negative lifecycle claim is made for `0xfBBe...`.
@@ -18,7 +18,7 @@
 ### 2026-08-25 — Final hosting/CI verification
 
 - Added the root workspace `package-lock.json` so `npm ci` from `apps/web` resolves the declared workspace consistently. Pushed as `eadfd5e`.
-- GitHub Actions run `32840667416` for `eadfd5e` is **FAILURE** at dependency installation on the hosted runner; later checks were skipped. Local frontend `39/39`, Direct Mode behavioral `16/16`, static/source `8/8`, typecheck, lint, and production build pass.
+- GitHub Actions run `32842395836` for `e084a4d` is **PASS**: frontend tests, typecheck, lint, production build, static validation, and Direct Mode behavioral checks all passed. Local frontend `39/39`, Direct Mode behavioral `16/16`, static/source `8/8` also pass.
 - Vercel manual production deployment `dpl_btonCyJhysm47tKWpq37GjWM9JsD` completed successfully. Public alias returns HTTP 200 and deployed JavaScript embeds the candidate contract address. No claim is made that the GitHub-originating Vercel check is green.
 - StudioNet fresh candidate lifecycle remains blocked before adjudication finality by the backend error `gen_getContractCode: psycopg2.ProgrammingError: can't adapt type 'dict'`; this is infrastructure, not an AtlasMerge contract revert.
 - **Known blocker:** StudioNet backend `gen_getContractCode` database adapter failure during adjudication.
