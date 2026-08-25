@@ -3,25 +3,32 @@
 ## Current release state
 
 - Current final contract source commit: `43bbc95b5413f080174824a8c53da28c2ffaef79`; contract SHA-256 `32ea5e612fc8fdc0cf5e319d21df4ab28868ae0bdc945bb554ab3cc8190c64e8`. Repository HEAD is `e084a4d` (workspace lockfile/CI/hosting-only changes after deployment; contract bytes unchanged).
-- New deployment: `0xfBBe4AFA3F196634d7d17951914bFA0AF427a2E4`; deployment transaction `0x0fd9ba8e4126969f35f550b17f45e667072103582c059c0f93b9b021eca8d6e5`. The prior `0x56A9...` deployment is superseded pending fresh lifecycle proof.
+- New deployment: `0xfBBe4AFA3F196634d7d17951914bFA0AF427a2E4`; deployment transaction `0x0fd9ba8e4126969f35f550b17f45e667072103582c059c0f93b9b021eca8d6e5`. The prior `0x56A9...` deployment is superseded historical state.
 - Production frontend deployment `dpl_btonCyJhysm47tKWpq37GjWM9JsD` (`https://web-j7x13jnn6-bibidees-projects.vercel.app`) is ready and aliased at https://atlasmerge.vercel.app; its bundle contains `0xfBBe4AFA3F196634d7d17951914bFA0AF427a2E4`. The GitHub-originating `atlasmerge` project still reports a failed check because its project-level install/output settings are not aligned with this monorepo; the manually published production alias is healthy.
-- Truthful status: local tests and source deployment are complete. Fresh adjudication is blocked by a StudioNet backend PostgreSQL `can't adapt type dict` failure in `gen_getContractCode`; no positive/negative lifecycle claim is made for `0xfBBe...`.
+- Truthful status: the earlier StudioNet `gen_getContractCode` PostgreSQL adapter error has cleared. Read-only RPC and the candidate adjudication now succeed; the fresh positive lifecycle is proven below. A fresh digest-mismatch write still requires a separate authorized wallet transaction.
 
 > **Mandatory living log.** `AGENTS.md` requires an agent to append here immediately after every meaningful work unit, before starting the next one. This is the operational continuity file; it must describe what actually happened, not what was intended.
 
 ## Current checkpoint
 
 - **Phase:** Final release-closure verification after the single convergence redeployment.
-- **Last completed work:** Prompt safety, geographic identity binding, canonical verdict convergence, VecDB eligibility parity, authoritative feature IDs, Report submission locking, pinned CI tooling, deployment, Vercel update, positive lifecycle, and digest-mismatch lifecycle.
-- **Next exact action:** Resolve the external StudioNet `gen_getContractCode` PostgreSQL adapter incident, then replay the fresh adjudication and negative proof without changing the deployed source.
+- **Last completed work:** Prompt safety, geographic identity binding, canonical verdict convergence, VecDB eligibility parity, authoritative feature IDs, Report submission locking, pinned CI tooling, deployment, Vercel update, and candidate positive lifecycle.
+- **Next exact action:** Submit and adjudicate one fresh digest-mismatch cluster on the same contract from an authorized wallet, then record its no-mutation readback.
 
 ### 2026-08-25 — Final hosting/CI verification
 
 - Added the root workspace `package-lock.json` so `npm ci` from `apps/web` resolves the declared workspace consistently. Pushed as `eadfd5e`.
 - GitHub Actions run `32842395836` for `e084a4d` is **PASS**: frontend tests, typecheck, lint, production build, static validation, and Direct Mode behavioral checks all passed. Local frontend `39/39`, Direct Mode behavioral `16/16`, static/source `8/8` also pass.
 - Vercel manual production deployment `dpl_btonCyJhysm47tKWpq37GjWM9JsD` completed successfully. Public alias returns HTTP 200 and deployed JavaScript embeds the candidate contract address. No claim is made that the GitHub-originating Vercel check is green.
-- StudioNet fresh candidate lifecycle remains blocked before adjudication finality by the backend error `gen_getContractCode: psycopg2.ProgrammingError: can't adapt type 'dict'`; this is infrastructure, not an AtlasMerge contract revert.
-- **Known blocker:** StudioNet backend `gen_getContractCode` database adapter failure during adjudication.
+- Historical note: an earlier candidate adjudication poll observed the transient backend error `gen_getContractCode: psycopg2.ProgrammingError: can't adapt type 'dict'`; it cleared without source changes and is not a current blocker.
+
+### 2026-08-25 — StudioNet diagnostic cleared and candidate lifecycle verified
+
+- Exact `gen_getContractCode` RPC now succeeds for both addresses. Candidate `0xfBBe4AFA3F196634d7d17951914bFA0AF427a2E4` returned 30,017 decoded bytes, SHA-256 `32ea5e612fc8fdc0cf5e319d21df4ab28868ae0bdc945bb554ab3cc8190c64e8`; historical `0x56A940a8622Cb6Ead25bff4Ac0B0dDe5a1D18ae4` returned 29,849 decoded bytes, SHA-256 `1c537aea90b15a7171d53849743e27ad7f78adff0082aa961a97ad284adf943a`. Both responses were base64 strings with the expected source prefix; neither currently reproduces the dict-adaptation error.
+- Read-only candidate state is healthy: `get_layer(1)`, `get_feature(1)`, `get_cluster(1)`, `get_layers`, `get_layer_ids`, `get_cluster_ids`, `get_layer_features`, and `get_layer_clusters` all returned successfully. Feature 1 is version 2 with name `Wole Soyinka Centre for Culture and the Creative Arts`; Cluster 1 is status `3` / `ACCEPTED`.
+- The previously observed adjudication hash `0x0d33f917cdcbb0c3a10b7b6f98ba70f7d1ae7d8cf33b49790ab9e5d2a3dadd8b` is now `FINALIZED`, status/result `SUCCESS`, consensus result `ACCEPT_DELTA`, with 3 agreeing validators and 2 idle after quorum. `get_feature_history(1,0,32)` contains Delta 1 (old `National Arts Theatre`, new `Wole Soyinka Centre for Culture and the Creative Arts`, digest `sha256:ff3e66d30cacf447f2a2be64b86508404d56ea6c98306e15c49df1e3a8cfc701`); `preview_related(1,8)` returns `delta_id=1` with distance `0.023114331`. Version/history/VecDB mutation is therefore proven on the candidate.
+- Classification: the earlier error was a transient StudioNet backend incident (category A), not an AtlasMerge execution failure and not a deployment-record-specific defect. No source or contract change was made.
+- **Historical incident:** StudioNet backend `gen_getContractCode` database adapter failure during adjudication; currently cleared.
 
 ### 2026-08-25 — Convergence deployment and final lifecycle proof
 
