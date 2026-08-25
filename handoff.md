@@ -21,7 +21,7 @@
 - Deployment finalized on StudioNet from source commit `1fcc22bd0589a4ad5e5a7947ea28ae235da5b993`; contract source SHA-256 is `f3842b2062a111170d40b88874531f140e45c2167eeb8bb99cc801ec22721c9d`.
 - Contract `0x473b3ad60d22923aEC7f881f728641F22a4b9ED7`; deployment transaction `0x3542da877e0e882742b1886adec76f82f0b37a412fc348cf66d3c1efc25c663e`; StudioNet Explorer: https://explorer-studio.genlayer.com/address/0x473b3ad60d22923aEC7f881f728641F22a4b9ED7.
 - Live seed transactions finalized Accepted/SUCCESS: create layer `0x9cecacf0c1beb3f1c4093e3689ee0adbe40500e706ec3a2abb6cdf9b3547eb8a` (layer 1), register feature `0xec03c30236470bbb3e9d88e9ec2198f1d11c2ab4d8c76487ac92689067078afd` (feature 1), submit cluster `0x092fce247e50aee4ed9f66c6f750fee880b0ba1dbb39b1c85b19964ddf460889` (cluster 1).
-- Adjudication transaction `0x1a22f47f229210cab37580e259500f124ed5310647bd0cccaede3b368bec86a0` is still cycling through validator leader rotation/majority disagreement in StudioNet; no final decision or mutation is claimed yet.
+- Adjudication transaction `0x1a22f47f229210cab37580e259500f124ed5310647bd0cccaede3b368bec86a0` finalized but failed to reach validator consensus after leader rotation. It is recorded as an undetermined/fail-closed outcome; no feature, version, Delta/history, or VecDB mutation is claimed.
 - Frontend production deployment `dpl_7bRfogyA8o8GhHiVcELhQ6RAuqqs` is aliased at https://atlasmerge.vercel.app and its bundle contains the new address.
 - Verification: frontend 39/39, contract/direct 20/20, typecheck, lint, and production build passed locally. Hosted CI status for the newest commit remains to be checked before claiming green.
 
