@@ -1,3 +1,3 @@
 # Reproducible Direct Mode toolchain used by CI.
-# GenVM universal artifact: v0.2.12 (cached by .github/workflows/ci.yml)
+# GenVM universal artifact: v0.3.0-rc7 (cached by .github/workflows/ci.yml)
 genlayer-test @ git+https://github.com/genlayerlabs/genlayer-testing-suite.git@75a5bcde75582734caaf210b9ebadab358fd45cb

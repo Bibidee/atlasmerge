@@ -27,14 +27,14 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/gltest-direct
-          key: genvm-direct-v0.2.12-linux-${{ runner.arch }}
+          key: genvm-direct-v0.3.0-rc7-linux-${{ runner.arch }}
       - name: Seed pinned GenVM Direct Mode artifact
         run: |
           mkdir -p ~/.cache/gltest-direct
-          test -f ~/.cache/gltest-direct/genvm-universal-v0.2.12.tar.xz || \
+          test -f ~/.cache/gltest-direct/genvm-universal-v0.3.0-rc7.tar.xz || \
             curl --fail --location --retry 3 \
-            https://github.com/genlayerlabs/genvm/releases/download/v0.2.12/genvm-universal.tar.xz \
-            --output ~/.cache/gltest-direct/genvm-universal-v0.2.12.tar.xz
+            https://github.com/genlayerlabs/genvm/releases/download/v0.3.0-rc7/genvm-universal.tar.xz \
+            --output ~/.cache/gltest-direct/genvm-universal-v0.3.0-rc7.tar.xz
       - name: Install frontend dependencies
         run: npm ci
         working-directory: apps/web
