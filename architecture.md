@@ -133,6 +133,8 @@ Decision prompt fields (serialized once as bounded JSON; values are untrusted da
 
 The architecture deliberately separates **selection** from **judgment**. A memory hit is never enough to authorize the final transition.
 
+The deterministic envelope is a complete matrix, not a one-way acceptance check: `ACCEPT_DELTA` requires accessible/MATCH/SUPPORTED/DIRECT_SUPPORT; `REJECT_DELTA` requires accessible/MATCH/CONTRADICTED/CONTRADICTED; `SPLIT_CLUSTER` requires accessible/MATCH/MIXED/MIXED_EVIDENCE; and `INSUFFICIENT_EVIDENCE` is reserved for inaccessible evidence, feature mismatch, or insufficient support with their corresponding reason codes. Contradictory combinations revert before state mutation.
+
 ## 9. No hosted API boundary
 
 AtlasMerge has no `POST /api/*` application API, backend, or database. The Next.js frontend reads directly from the StudioNet contract and submits injected-wallet transactions. A public HTTPS evidence origin is independently fetched by validators; it is not an AtlasMerge-controlled service.

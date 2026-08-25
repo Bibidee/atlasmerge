@@ -595,3 +595,10 @@ Copy this block for every meaningful work unit:
 - Additional live negative proofs (stale-version, unauthorized feature registration, cross-layer proposal, unauthorized cancellation) were **not submitted** in this polish pass: each requires a new wallet-signed transaction, and no such mutation was authorized. The reproducible Direct Mode suite covers the corresponding authorization, version, geometry, and no-mutation behavior without manufacturing production state.
 - The earlier `response.status_code` incident is preserved as a fail-closed engineering note: the fetch exception became `INSUFFICIENT_EVIDENCE` rather than mutating state; the implementation now uses `response.status`.
 - Production smoke checks: `https://atlasmerge.vercel.app` returned HTTP 200 and the public bundle points to the canonical address. The app URL and canonical contract above are the final production pair.
+
+### 2026-08-25 — Final closure audit after hardening source changes
+
+- Hardening source commit: `0818326f7dc33144e1d8ea9371ef2c62b01c22e6`; contract source SHA-256 `61889e59e64a59d1c5d1929bb2f36cb5e4720b497758701656b88e52681eddf3`. CI-only pin successors are `9c62ae1` and `c38f0e8`.
+- Local verification on the hardening source: frontend **39/39 passed**, Direct Mode **16/16 passed**, static validation **8/8 passed**, typecheck passed, lint passed, production build passed; local failed `0`, skipped `0`.
+- Direct Mode toolchain is pinned to official testing-suite commit `75a5bcde75582734caaf210b9ebadab358fd45cb` with the official GenVM `v0.3.0-rc7` runners archive cached by CI. The latest hosted run [32828791984](https://github.com/Bibidee/atlasmerge/actions/runs/32828791984) still fails in the blocking behavioral step; all setup, artifact, frontend, typecheck, lint, build, and static steps pass. The hosted failure is not hidden or marked non-blocking.
+- The hardening source has **not** been deployed. The prior `0x9D15...` positive/negative lifecycle remains historical proof for the previous source, not proof of this changed source. A wallet-authorized StudioNet deployment and complete lifecycle replay are still required before READY can be claimed.
