@@ -38,6 +38,11 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
         working-directory: apps/web
+      - name: Restore optional native frontend binaries
+        # npm can omit platform-specific optional Rollup packages when the
+        # lockfile was produced on another OS. Restore them without changing
+        # the pinned lockfile so Vitest/Next run on Ubuntu.
+        run: npm install --workspace @atlasmerge/web --include=optional --no-save --no-audit --no-fund
       - name: Frontend tests
         run: npm run test --workspace @atlasmerge/web
       - name: Typecheck
