@@ -33,7 +33,15 @@ function numeric(value:unknown):number{
 
 function scalarText(value:unknown):string{
   if(typeof value==="string")return value;
-  if(typeof value==="number"||typeof value==="bigint")return String(value);
+  if(typeof value==="number"||typeof value==="bigint"||typeof value==="boolean")return String(value);
+  throw new Error("MALFORMED_RESPONSE");
+}
+
+function jsonText(value:unknown):string{
+  if(typeof value==="string")return value;
+  if(value&&typeof value==="object"){
+    try{return JSON.stringify(value);}catch{throw new Error("MALFORMED_RESPONSE");}
+  }
   throw new Error("MALFORMED_RESPONSE");
 }
 
@@ -41,6 +49,11 @@ function normalizeLayer(value:unknown):Layer{
   const record=object(value);
   return {
     ...record,
+    ...(record.steward!==undefined?{steward:scalarText(record.steward)}:{}),
+    ...(record.name!==undefined?{name:scalarText(record.name)}:{}),
+    ...(record.charter_url!==undefined?{charter_url:scalarText(record.charter_url)}:{}),
+    ...(record.charter_digest!==undefined?{charter_digest:scalarText(record.charter_digest)}:{}),
+    ...(record.bbox_json!==undefined?{bbox_json:jsonText(record.bbox_json)}:{}),
     ...(record.version!==undefined?{version:decimal(record.version)}:{}),
     ...(record.feature_count!==undefined?{feature_count:decimal(record.feature_count)}:{}),
   } as unknown as Layer;
@@ -51,7 +64,12 @@ function normalizeFeature(value:unknown):Feature{
   return {
     ...record,
     ...(record.layer_id!==undefined?{layer_id:decimal(record.layer_id)}:{}),
+    ...(record.feature_key!==undefined?{feature_key:scalarText(record.feature_key)}:{}),
+    ...(record.attrs_json!==undefined?{attrs_json:jsonText(record.attrs_json)}:{}),
+    ...(record.geometry_digest!==undefined?{geometry_digest:scalarText(record.geometry_digest)}:{}),
+    ...(record.coarse_geohash!==undefined?{coarse_geohash:scalarText(record.coarse_geohash)}:{}),
     ...(record.version!==undefined?{version:decimal(record.version)}:{}),
+    ...(record.active!==undefined?{active:Boolean(record.active)}:{}),
   } as unknown as Feature;
 }
 
@@ -59,10 +77,19 @@ function normalizeCluster(value:unknown):Cluster{
   const record=object(value);
   return {
     ...record,
+    ...(record.submitter!==undefined?{submitter:scalarText(record.submitter)}:{}),
     ...(record.layer_id!==undefined?{layer_id:decimal(record.layer_id)}:{}),
     ...(record.feature_id!==undefined?{feature_id:decimal(record.feature_id)}:{}),
+    ...(record.attribute!==undefined?{attribute:scalarText(record.attribute)}:{}),
+    ...(record.value!==undefined?{value:scalarText(record.value)}:{}),
+    ...(record.bundle_url!==undefined?{bundle_url:scalarText(record.bundle_url)}:{}),
+    ...(record.bundle_digest!==undefined?{bundle_digest:scalarText(record.bundle_digest)}:{}),
+    ...(record.geohash!==undefined?{geohash:scalarText(record.geohash)}:{}),
     ...(record.base_version!==undefined?{base_version:decimal(record.base_version)}:{}),
     ...(record.status!==undefined?{status:numeric(record.status)}:{}),
+    ...(record.related_json!==undefined?{related_json:jsonText(record.related_json)}:{}),
+    ...(record.reason_code!==undefined?{reason_code:scalarText(record.reason_code)}:{}),
+    ...(record.rationale!==undefined?{rationale:scalarText(record.rationale)}:{}),
   } as unknown as Cluster;
 }
 
@@ -72,6 +99,8 @@ function normalizeRelated(value:unknown):Related{
     ...record,
     ...(record.delta_id!==undefined?{delta_id:decimal(record.delta_id)}:{}),
     ...(record.distance!==undefined?{distance:scalarText(record.distance)}:{}),
+    ...(record.status!==undefined?{status:scalarText(record.status)}:{}),
+    ...(record.summary!==undefined?{summary:scalarText(record.summary)}:{}),
   } as unknown as Related;
 }
 
