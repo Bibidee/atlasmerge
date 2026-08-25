@@ -53,6 +53,13 @@ def test_attribute_validation_and_fail_closed_evidence_are_present():
     assert "MAX_EVIDENCE=6000" in code
     assert 'return {"ok":True,"kind":"OK","text":text}' in code
 
+def test_web_response_uses_genlayer_status_and_separates_evidence_consensus():
+    code=source()
+    assert "response.status < 200" in code
+    assert "response.status_code" not in code
+    assert "evidence_consensus=gl.vm.run_nondet_unsafe" in code
+    assert "fetch_evidence()==leaders_res.calldata" in code
+
 def test_bbox_uses_fixed_point_integer_calldata():
     code=source()
     assert "min_lat_e6: int" in code
