@@ -60,6 +60,29 @@ def test_web_response_uses_genlayer_status_and_separates_evidence_consensus():
     assert "evidence_consensus=gl.vm.run_nondet_unsafe" in code
     assert "fetch_evidence()==leaders_res.calldata" in code
 
+def test_evidence_pipeline_contains_all_bounded_failure_guards_and_two_phases():
+    code=source()
+    for marker in (
+        "if response.status < 200 or response.status >= 300",
+        "if len(body)>MAX_PAGE_BYTES",
+        "text=body.decode(\"utf-8\")",
+        "if len(text)==0 or len(text)>MAX_EVIDENCE",
+        "hashlib.sha256(text.encode(\"utf-8\")).hexdigest()!=expected_digest",
+        "except Exception:",
+        "evidence_consensus=gl.vm.run_nondet_unsafe",
+        "raw=json.dumps(gl.vm.run_nondet_unsafe(leader_fn, validator_fn))",
+    ):
+        assert marker in code
+    assert code.index("evidence_consensus=gl.vm.run_nondet_unsafe") < code.index("raw=json.dumps(gl.vm.run_nondet_unsafe(leader_fn, validator_fn))")
+
+def test_non_accept_branches_write_only_terminal_cluster_state():
+    code=source()
+    decision_block=code[code.index('if decision != "ACCEPT_DELTA"'):code.index('attrs=self._json_object', code.index('if decision != "ACCEPT_DELTA"'))]
+    assert "self.clusters[cluster_id]=cluster" in decision_block
+    assert "self.delta_count" not in decision_block
+    assert "feature.version" not in decision_block
+    assert "self.vectors.insert" not in decision_block
+
 def test_bbox_uses_fixed_point_integer_calldata():
     code=source()
     assert "min_lat_e6: int" in code
