@@ -40,9 +40,10 @@ jobs:
         working-directory: apps/web
       - name: Restore optional native frontend binaries
         # npm can omit platform-specific optional Rollup packages when the
-        # lockfile was produced on another OS. Restore them without changing
-        # the pinned lockfile so Vitest/Next run on Ubuntu.
-        run: npm install --workspace @atlasmerge/web --include=optional --no-save --no-audit --no-fund
+        # lockfile was produced on another OS. Install the exact Rollup
+        # companion without changing the pinned lockfile so Vitest/Next run
+        # on Ubuntu.
+        run: npm install --workspace @atlasmerge/web --no-save --ignore-scripts --no-audit --no-fund @rollup/rollup-linux-x64-gnu@4.62.5
       - name: Frontend tests
         run: npm run test --workspace @atlasmerge/web
       - name: Typecheck
