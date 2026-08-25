@@ -59,6 +59,8 @@ def test_web_response_uses_genlayer_status_and_separates_evidence_consensus():
     assert "response.status_code" not in code
     assert "evidence_consensus=gl.vm.run_nondet_unsafe" in code
     assert "fetch_evidence()==leaders_res.calldata" in code
+    assert "judgment[\"source_accessible\"]=True" in code
+    assert "Phase A has already independently fetched" in code
 
 def test_evidence_pipeline_contains_all_bounded_failure_guards_and_two_phases():
     code=source()
