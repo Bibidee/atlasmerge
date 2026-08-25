@@ -66,15 +66,15 @@ Embed accepted deltas from a normalized sentence: geohash, feature type, canonic
 ## 5. Domain contract model
 
 - Layer { steward, name, charter_url, charter_digest, bbox_json, version, feature_count }
-- Feature { layer_id, feature_key, attrs_json, geometry_digest, version, active }
+- Feature { layer_id, feature_key, attrs_json (native object ABI, canonically serialized on-chain), geometry_digest, version, active }
 - Delta { feature_id, cluster_id, attribute, old_value, new_value, evidence_digest, accepted_at }
 - Cluster { submitter, layer_id, feature_id, proposed_attribute, proposed_value, bundle_url, bundle_digest, coarse_geohash, status, related_delta_ids_json, rationale }
 - VectorPointer { delta_id, layer_id, geohash_prefix }
 
 ## 6. Public contract surface
 
-- create_layer(name, charter_url, charter_digest, bbox_json) -> layer_id
-- register_feature(layer_id, feature_key, initial_attrs_json, geometry_digest) -> feature_id
+- create_layer(name, charter_url, charter_digest, min_lat_e6, max_lat_e6, min_lng_e6, max_lng_e6) -> layer_id
+- register_feature(layer_id, feature_key, initial_attrs_object, geometry_digest) -> feature_id
 - submit_cluster(layer_id, feature_id, proposed_attribute, proposed_value, report_bundle_url, bundle_digest, coarse_geohash) -> cluster_id
 - adjudicate_cluster(cluster_id) -> decision
 - cancel_cluster(cluster_id)
@@ -83,7 +83,7 @@ Embed accepted deltas from a normalized sentence: geohash, feature type, canonic
 - get_cluster(cluster_id)
 - get_clusters(offset, limit), get_feature_clusters(feature_id, offset, limit)
 - get_feature_history(feature_id, offset, limit)
-- preview_related(cluster_id, k)
+- preview_related(cluster_id, k) — uses the same deterministic eligibility helper as adjudication: accepted Delta only, same layer, exact coarse geohash, and matching attribute; complete KNN candidates are retrieved before filtering to avoid starvation.
 
 Third-party consumers must be able to reconstruct the final status from views alone.
 
@@ -120,10 +120,11 @@ Embedding inputs:
 
 Embed accepted deltas from a normalized sentence: geohash, feature type, canonical feature name, changed attribute, old value, new value and bounded reason. Retrieval is first deterministically filtered by layer and coarse geohash, then semantic KNN finds similar past changes. This avoids nearest-vector matches from distant places becoming misleading context.
 
-Decision prompt fields:
+Decision prompt fields (serialized once as bounded JSON; values are untrusted data, never a second format string):
 
-- layer charter
+- layer charter/bounded layer bbox
 - feature key/current version/current attrs
+- feature geometry digest and layer membership
 - proposed single attribute/value
 - coarse geohash
 - bounded independent report summaries

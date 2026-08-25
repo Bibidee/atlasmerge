@@ -271,8 +271,8 @@ Use numeric storage enums (`u8`/`u16`) where appropriate and expose readable nam
 
 ### Intended public surface
 
-- create_layer(name, charter_url, charter_digest, bbox_json) -> layer_id
-- register_feature(layer_id, feature_key, initial_attrs_json, geometry_digest) -> feature_id
+- create_layer(name, charter_url, charter_digest, min_lat_e6, max_lat_e6, min_lng_e6, max_lng_e6) -> layer_id
+- register_feature(layer_id, feature_key, initial_attrs_object, geometry_digest) -> feature_id
 - submit_cluster(layer_id, feature_id, proposed_attribute, proposed_value, report_bundle_url, bundle_digest, coarse_geohash) -> cluster_id
 - adjudicate_cluster(cluster_id) -> decision
 - cancel_cluster(cluster_id)

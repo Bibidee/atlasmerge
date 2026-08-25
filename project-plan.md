@@ -144,8 +144,8 @@ Seed a small map with five venues, collect multiple off-chain closure/name-chang
 
 ## Contract milestone checklist
 
-- Implement and test `create_layer(name, charter_url, charter_digest, bbox_json) -> layer_id`.
-- Implement and test `register_feature(layer_id, feature_key, initial_attrs_json, geometry_digest) -> feature_id`.
+- Implement and test `create_layer(name, charter_url, charter_digest, min_lat_e6, max_lat_e6, min_lng_e6, max_lng_e6) -> layer_id`.
+- Implement and test `register_feature(layer_id, feature_key, initial_attrs_object, geometry_digest) -> feature_id`.
 - Implement and test `submit_cluster(layer_id, feature_id, proposed_attribute, proposed_value, report_bundle_url, bundle_digest, coarse_geohash) -> cluster_id`.
 - Implement and test `adjudicate_cluster(cluster_id) -> decision`.
 - Implement and test `cancel_cluster(cluster_id)`.

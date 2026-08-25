@@ -1,0 +1,2 @@
+# Reproducible Direct Mode toolchain used by CI.
+genlayer-test @ git+https://github.com/genlayerlabs/genlayer-testing-suite.git@75a5bcde75582734caaf210b9ebadab358fd45cb

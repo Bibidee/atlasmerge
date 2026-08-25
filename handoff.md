@@ -1,24 +1,20 @@
 # AtlasMerge — Handoff Log
 
-## Current canonical deployment
+## Current release state
 
-- Contract: `0x874a677F561F14D4F9722275FA1f46D9D12c5590`.
-- Deployment tx: `0xf1e27fe32a9165e70dbe4a26c9e082cb1b5df94f2ed4ad3798bc6f74a99f6665` (majority agreement; leader GenVM success).
-- Contract source commit: `fddd0a94bcfe48eb5347aa79e2cb94d4ceadcd8f`; SHA-256 `A1D543883069465F2434DE084C3ACB2BB6BD40F9EC076628B8C998BA9EC84A7D`.
-- Production app: `https://atlasmerge.vercel.app` is aliased to `dpl_4y7ArZ198k1LoECq3fGunmisRAab` and configured for that address.
-- Truthful status: unseeded. Browser wallet lifecycle, positive acceptance, VecDB proof, and final negative proofs remain unproven.
+- Previously verified canonical contract: `0x9D15E405F3aE2A9166866131b1EEC73cd45C8C42` (deployment `0x831fe5a918fe469135613edf8e9a1c0506826170df962518a9bb0d0b4de81cc9`), now superseded pending the final hardening redeployment below.
+- Current hardening source is not yet deployed. Its SHA-256 is `61889e59e64a59d1c5d1929bb2f36cb5e4720b497758701656b88e52681eddf3`.
+- Production app: `https://atlasmerge.vercel.app`. It still points at the previously verified address until the one authorized final redeployment is complete.
+- Truthful status: source hardening and test expansion are in progress; no new production state has been manufactured.
 
 > **Mandatory living log.** `AGENTS.md` requires an agent to append here immediately after every meaningful work unit, before starting the next one. This is the operational continuity file; it must describe what actually happened, not what was intended.
 
 ## Current checkpoint
 
-- **Phase:** Blueprint complete, implementation not started.
-- **Last completed work:** The full project documentation pack was created.
-- **Next exact action:** Create the repository scaffold described in `trd.md`, pin the baseline dependencies, and implement the first deterministic contract storage/types without any consensus call.
-- **Known blockers:** None yet. Runtime/API mismatches discovered later must be logged rather than guessed around.
-- **StudioNet address:** Not deployed.
-- **Deployment commit:** Not available.
-- **Frontend URL:** Not deployed.
+- **Phase:** Final release-closure hardening before one redeployment.
+- **Last completed work:** Prompt safety, verdict matrix, VecDB eligibility parity, authoritative feature IDs, Report submission locking, documentation parity, and pinned CI tooling were updated locally.
+- **Next exact action:** Run the full matrix on the frozen source, commit/push, deploy once through the authorized StudioNet wallet path, update Vercel, and repeat the positive/negative lifecycle.
+- **Known blocker:** A StudioNet wallet approval is required for the single final deployment and subsequent lifecycle transactions.
 
 ## Immediate implementation sequence
 
