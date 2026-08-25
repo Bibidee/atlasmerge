@@ -47,4 +47,4 @@ npm run build
 
 ## Known limitation
 
-Public webpages can change or vary between validators. AtlasMerge compares stable structured decision fields and fails closed where evidence or consensus is unavailable. The current SDK requires MetaMask with the GenLayer Snap for StudioNet writes; Brave Wallet alone cannot sign them. Production deployment evidence and any observed undetermined transactions are documented rather than hidden in `handoff.md`.
+Public webpages can change or vary between validators. AtlasMerge compares stable structured decision fields and fails closed where evidence or consensus is unavailable. StudioNet writes use the injected EIP-1193 wallet selected in the browser (including Rabby and other compatible wallets); no MetaMask Snap is required by the current browser path. Production deployment evidence and any observed undetermined transactions are documented rather than hidden in `handoff.md`.
