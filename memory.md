@@ -23,8 +23,8 @@ a bounded canonical delta to a geographic feature: open/closed, name, access, di
 ## Current status
 
 **Phase:** StudioNet release candidate
-**Code status:** Consensus-convergence hardening is deployed and live. Source commit `98a88688b26b495a7fb33f60837f0b2ca97b1058`; source SHA-256 `1c537aea90b15a7171d53849743e27ad7f78adff0082aa961a97ad284adf943a`.
-**Current StudioNet contract:** `0x56A940a8622Cb6Ead25bff4Ac0B0dDe5a1D18ae4` (deployment transaction `0x870c9d9dea7aa430057a456b2b61b1486d34345b19a38c4233e76f7741a89fd4`).
+**Code status:** Memory-ordering hardening is deployed but awaits fresh lifecycle proof. Source commit `43bbc95b5413f080174824a8c53da28c2ffaef79`; source SHA-256 `32ea5e612fc8fdc0cf5e319d21df4ab28868ae0bdc945bb554ab3cc8190c64e8`.
+**Current StudioNet contract candidate:** `0xfBBe4AFA3F196634d7d17951914bFA0AF427a2E4` (deployment transaction `0x0fd9ba8e4126969f35f550b17f45e667072103582c059c0f93b9b021eca8d6e5`); the previous address is historical because source changed.
 **Previously verified StudioNet contract:** `0x9D15E405F3aE2A9166866131b1EEC73cd45C8C42` (deployment `0x831fe5a918fe469135613edf8e9a1c0506826170df962518a9bb0d0b4de81cc9`, source SHA-256 `5b7d17d2d103d90f5d2b5a3618fef1997b1de6e5950208d6502c61122fc6bc57`). It remains historical pending the single final redeployment.
 **Live frontend:** https://atlasmerge.vercel.app (Vercel deployment `dpl_8vgBkeMgrxJraFQ9MsyaNGksc2zY`).
 **Last durable update:** 2026-08-25

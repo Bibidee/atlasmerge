@@ -2,10 +2,10 @@
 
 ## Current release state
 
-- Current canonical contract: `0x56A940a8622Cb6Ead25bff4Ac0B0dDe5a1D18ae4`; deployment `0x870c9d9dea7aa430057a456b2b61b1486d34345b19a38c4233e76f7741a89fd4`; source commit `98a88688b26b495a7fb33f60837f0b2ca97b1058`; source SHA-256 `1c537aea90b15a7171d53849743e27ad7f78adff0082aa961a97ad284adf943a`.
-- Previous `0x473b...` and `0x1a22...` are superseded historical fail-closed evidence: broad semantic equivalence caused validator disagreement, not wallet failure.
-- Production app: `https://atlasmerge.vercel.app`, Vercel deployment `dpl_8krjCDbDWZdCvQ22WD6CtzxNVJcd`.
-- Truthful status: fresh positive and digest-mismatch lifecycles are verified on the final address; hosted CI run 47 remains to be checked for green completion.
+- Current final source commit: `43bbc95b5413f080174824a8c53da28c2ffaef79`; contract SHA-256 `32ea5e612fc8fdc0cf5e319d21df4ab28868ae0bdc945bb554ab3cc8190c64e8`.
+- New deployment: `0xfBBe4AFA3F196634d7d17951914bFA0AF427a2E4`; deployment transaction `0x0fd9ba8e4126969f35f550b17f45e667072103582c059c0f93b9b021eca8d6e5`. The prior `0x56A9...` deployment is superseded pending fresh lifecycle proof.
+- Production frontend is being republished from the workspace-root fix; the last manually published deployment remains `dpl_9yhKt1Rn46W9icDkbFi6W7tvFy3Q` until the GitHub-originating build is verified.
+- Truthful status: local tests and source deployment are complete. Fresh adjudication is blocked by a StudioNet backend PostgreSQL `can't adapt type dict` failure in `gen_getContractCode`; no positive/negative lifecycle claim is made for `0xfBBe...`.
 
 > **Mandatory living log.** `AGENTS.md` requires an agent to append here immediately after every meaningful work unit, before starting the next one. This is the operational continuity file; it must describe what actually happened, not what was intended.
 
@@ -13,8 +13,8 @@
 
 - **Phase:** Final release-closure verification after the single convergence redeployment.
 - **Last completed work:** Prompt safety, geographic identity binding, canonical verdict convergence, VecDB eligibility parity, authoritative feature IDs, Report submission locking, pinned CI tooling, deployment, Vercel update, positive lifecycle, and digest-mismatch lifecycle.
-- **Next exact action:** Check hosted CI run 47 and record its final conclusion.
-- **Known blocker:** None in the live StudioNet lifecycle; hosted CI conclusion is pending.
+- **Next exact action:** Verify GitHub-originating Vercel build and wait for StudioNet to recover before replaying lifecycle.
+- **Known blocker:** StudioNet backend `gen_getContractCode` database adapter failure during adjudication.
 
 ### 2026-08-25 — Convergence deployment and final lifecycle proof
 
