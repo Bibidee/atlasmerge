@@ -64,6 +64,7 @@ def test_web_response_uses_genlayer_status_and_separates_evidence_consensus():
     assert "prompt % evidence" not in code
     assert "json.dumps(prompt_context" in code
     assert "target_feature_identity" in code
+    assert "feature.coarse_geohash != coarse_geohash" in code
 
 def test_evidence_pipeline_contains_all_bounded_failure_guards_and_two_phases():
     code=source()

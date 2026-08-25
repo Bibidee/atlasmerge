@@ -45,7 +45,7 @@ class Layer:
 @allow_storage
 @dataclass
 class Feature:
-    layer_id: u256; feature_key: str; attrs_json: str; geometry_digest: str; version: u256; active: bool
+    layer_id: u256; feature_key: str; attrs_json: str; geometry_digest: str; coarse_geohash: str; version: u256; active: bool
 
 @allow_storage
 @dataclass
@@ -137,7 +137,7 @@ class AtlasMerge(gl.Contract):
         # decision. Validators must match evidence to the exact layer member,
         # key, geometry digest, and layer bounding box—not merely a similar
         # nearby name.
-        return {"layer_id":str(feature.layer_id),"feature_key":feature.feature_key,"geometry_digest":feature.geometry_digest,"layer_bbox":json.loads(layer.bbox_json)}
+        return {"layer_id":str(feature.layer_id),"feature_key":feature.feature_key,"geometry_digest":feature.geometry_digest,"feature_geohash":feature.coarse_geohash,"layer_bbox":json.loads(layer.bbox_json)}
     def _layer(self, layer_id: u256) -> Layer:
         if layer_id not in self.layers: raise Exception("layer not found")
         return self.layers[layer_id]
@@ -177,12 +177,12 @@ class AtlasMerge(gl.Contract):
         return lid
 
     @gl.public.write
-    def register_feature(self, layer_id: u256, feature_key: str, initial_attrs: dict[str, str], geometry_digest: str) -> u256:
+    def register_feature(self, layer_id: u256, feature_key: str, initial_attrs: dict[str, str], geometry_digest: str, coarse_geohash: str) -> u256:
         if not isinstance(initial_attrs, dict): raise Exception("attribute object required")
         initial_attrs_json=json.dumps(initial_attrs, sort_keys=True)
         layer=self._layer(layer_id)
         if gl.message.sender_address != layer.steward: raise Exception("only the layer steward may register features")
-        feature_key=self._clean_text(feature_key, MAX_NAME, "feature key"); self._validate_digest(geometry_digest)
+        feature_key=self._clean_text(feature_key, MAX_NAME, "feature key"); self._validate_digest(geometry_digest); coarse_geohash=self._validate_geohash(coarse_geohash)
         attrs=self._json_object(initial_attrs_json, MAX_JSON)
         normalized={}
         for key in attrs:
@@ -192,7 +192,7 @@ class AtlasMerge(gl.Contract):
         unique_key=str(layer_id)+":"+feature_key
         if unique_key in self.feature_keys: raise Exception("feature key already exists in layer")
         self.feature_count += 1; fid=self.feature_count
-        self.features[fid]=Feature(layer_id, feature_key, initial_attrs_json, geometry_digest, 1, True); self.feature_keys[unique_key]=fid; layer.feature_count += 1; self.layers[layer_id]=layer
+        self.features[fid]=Feature(layer_id, feature_key, initial_attrs_json, geometry_digest, coarse_geohash, 1, True); self.feature_keys[unique_key]=fid; layer.feature_count += 1; self.layers[layer_id]=layer
         self.layer_feature_ids[str(layer_id)+":"+str(layer.feature_count-1)]=fid
         return fid
 
@@ -202,6 +202,7 @@ class AtlasMerge(gl.Contract):
         if feature.layer_id != layer_id: raise Exception("feature does not belong to layer")
         if proposed_attribute not in ALLOWED_ATTRIBUTES: raise Exception("unsupported attribute")
         proposed_value=self._validate_attribute_value(proposed_attribute, proposed_value); self._validate_https_url(report_bundle_url); self._validate_digest(bundle_digest); coarse_geohash=self._validate_geohash(coarse_geohash)
+        if feature.coarse_geohash != coarse_geohash: raise Exception("cluster geohash does not match feature identity")
         self.cluster_count += 1; cid=self.cluster_count
         self.clusters[cid]=Cluster(gl.message.sender_address, layer_id, feature_id, proposed_attribute, proposed_value, report_bundle_url, bundle_digest, coarse_geohash, feature.version, STATUS_PENDING, "[]", "", "")
         layer_prior=self.layer_cluster_counts[layer_id] if layer_id in self.layer_cluster_counts else 0
