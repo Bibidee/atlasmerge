@@ -2,19 +2,28 @@
 
 ## Current release state
 
-- Current source for the next single redeployment is commit `1fcc22bd0589a4ad5e5a7947ea28ae235da5b993` plus the convergence changes currently being prepared; contract SHA-256 after those changes is `1c537aea90b15a7171d53849743e27ad7f78adff0082aa961a97ad284adf943a`.
-- Historical fail-closed contract: `0x473b3ad60d22923aEC7f881f728641F22a4b9ED7` (deployment `0x3542da877e0e882742b1886adec76f82f0b37a412fc348cf66d3c1efc25c663e`). Its `UNDETERMINED` adjudication is retained as evidence that broad semantic equivalence failed closed.
-- Production app remains on the historical address until the convergence source is deployed once and the frontend is updated.
-- Truthful status: convergence source is locally tested; no new deployment or ACCEPT lifecycle is claimed yet.
+- Current canonical contract: `0x56A940a8622Cb6Ead25bff4Ac0B0dDe5a1D18ae4`; deployment `0x870c9d9dea7aa430057a456b2b61b1486d34345b19a38c4233e76f7741a89fd4`; source commit `98a88688b26b495a7fb33f60837f0b2ca97b1058`; source SHA-256 `1c537aea90b15a7171d53849743e27ad7f78adff0082aa961a97ad284adf943a`.
+- Previous `0x473b...` and `0x1a22...` are superseded historical fail-closed evidence: broad semantic equivalence caused validator disagreement, not wallet failure.
+- Production app: `https://atlasmerge.vercel.app`, Vercel deployment `dpl_8krjCDbDWZdCvQ22WD6CtzxNVJcd`.
+- Truthful status: fresh positive and digest-mismatch lifecycles are verified on the final address; hosted CI run 47 remains to be checked for green completion.
 
 > **Mandatory living log.** `AGENTS.md` requires an agent to append here immediately after every meaningful work unit, before starting the next one. This is the operational continuity file; it must describe what actually happened, not what was intended.
 
 ## Current checkpoint
 
-- **Phase:** Final release-closure verification after the single hardening redeployment.
-- **Last completed work:** Prompt safety, geographic identity binding, verdict matrix, VecDB eligibility parity, authoritative feature IDs, Report submission locking, pinned CI tooling, deployment, Vercel update, and live layer/feature/cluster seed.
-- **Next exact action:** Wait for or diagnose the adjudication validator rotation, then record the authoritative decision and mutation readback; do not claim ACCEPT until finalized.
-- **Known blocker:** The live adjudication transaction has not yet reached a convergent final result.
+- **Phase:** Final release-closure verification after the single convergence redeployment.
+- **Last completed work:** Prompt safety, geographic identity binding, canonical verdict convergence, VecDB eligibility parity, authoritative feature IDs, Report submission locking, pinned CI tooling, deployment, Vercel update, positive lifecycle, and digest-mismatch lifecycle.
+- **Next exact action:** Check hosted CI run 47 and record its final conclusion.
+- **Known blocker:** None in the live StudioNet lifecycle; hosted CI conclusion is pending.
+
+### 2026-08-25 — Convergence deployment and final lifecycle proof
+
+- Final source commit `98a88688b26b495a7fb33f60837f0b2ca97b1058`; contract SHA-256 `1c537aea90b15a7171d53849743e27ad7f78adff0082aa961a97ad284adf943a`.
+- Final contract deployment: `0x56A940a8622Cb6Ead25bff4Ac0B0dDe5a1D18ae4`; deployment transaction `0x870c9d9dea7aa430057a456b2b61b1486d34345b19a38c4233e76f7741a89fd4`; finalized Accepted/SUCCESS.
+- Positive lifecycle: create layer `0xafa889c0052b98447ecc25bd60372d9c60a9d98f5fc907c05e0262f798a0bf26`; register feature `0x9f534fdf4b85b2d184f6ec39547e36c2c0de31fc00079ad96f21498fdb5cc716`; submit cluster `0x2371f33222f117fb5bf6b0279565fff99649a352a28d3175fe1537f9bbf4d423`; adjudicate `0xd5bb3b301b0936e4a0b8b143b044abf842ff5f0dc097eca9f4e6c5374d7625f5` finalized Accepted/SUCCESS with `ACCEPT_DELTA`.
+- Positive readback: Feature 1 name changed from `National Arts Theatre` to `Wole Soyinka Centre for Culture and the Creative Arts`, version `1 → 2`; history contains Delta 1; `preview_related(1,8)` returned precedent `delta_id=1`.
+- Negative digest-mismatch lifecycle: submit cluster `0x82250edb658d3a762845e34992eb465c2e0df15241dabfaaca7614c5b86d925b`; adjudicate `0x1fa45335b88f777f0474ac54ebb3ef2ef46eef4a997ada7c64d9ea9903d6cc24` finalized Accepted/SUCCESS with `INSUFFICIENT_EVIDENCE`; Phase A equivalence was `DIGEST_MISMATCH`, Phase B was bypassed, and Feature 1 remained version 2 with no additional history/VecDB mutation.
+- Vercel production deployment `dpl_8krjCDbDWZdCvQ22WD6CtzxNVJcd` is aliased at https://atlasmerge.vercel.app and embeds `0x56A940a8622Cb6Ead25bff4Ac0B0dDe5a1D18ae4.
 
 ### 2026-08-25 — Final hardening deployment and live seed
 

@@ -23,13 +23,13 @@ a bounded canonical delta to a geographic feature: open/closed, name, access, di
 ## Current status
 
 **Phase:** StudioNet release candidate
-**Code status:** Consensus-convergence hardening is implemented and locally tested; it is not yet deployed. Current source SHA-256 is `1c537aea90b15a7171d53849743e27ad7f78adff0082aa961a97ad284adf943a`.
-**Historical StudioNet contract:** `0x473b3ad60d22923aEC7f881f728641F22a4b9ED7` (deployment transaction `0x3542da877e0e882742b1886adec76f82f0b37a412fc348cf66d3c1efc25c663e`); its failed-consensus adjudication remains fail-closed historical evidence.
+**Code status:** Consensus-convergence hardening is deployed and live. Source commit `98a88688b26b495a7fb33f60837f0b2ca97b1058`; source SHA-256 `1c537aea90b15a7171d53849743e27ad7f78adff0082aa961a97ad284adf943a`.
+**Current StudioNet contract:** `0x56A940a8622Cb6Ead25bff4Ac0B0dDe5a1D18ae4` (deployment transaction `0x870c9d9dea7aa430057a456b2b61b1486d34345b19a38c4233e76f7741a89fd4`).
 **Previously verified StudioNet contract:** `0x9D15E405F3aE2A9166866131b1EEC73cd45C8C42` (deployment `0x831fe5a918fe469135613edf8e9a1c0506826170df962518a9bb0d0b4de81cc9`, source SHA-256 `5b7d17d2d103d90f5d2b5a3618fef1997b1de6e5950208d6502c61122fc6bc57`). It remains historical pending the single final redeployment.
 **Live frontend:** https://atlasmerge.vercel.app (Vercel deployment `dpl_8vgBkeMgrxJraFQ9MsyaNGksc2zY`).
 **Last durable update:** 2026-08-25
 
-The current source enforces `MATCH` + accessible + `SUPPORTED` for acceptance, hashes exactly the evidence shown to consensus, validates exact geohash cells and geometry digests, and compares only one canonical semantic verdict across validators. A fresh deployment and lifecycle replay remain required. Exact historical transaction evidence is in `handoff.md`.
+The current source enforces `MATCH` + accessible + `SUPPORTED` for acceptance, hashes exactly the evidence shown to consensus, validates exact geohash cells and geometry digests, and compares only one canonical semantic verdict across validators. The fresh positive and digest-mismatch lifecycle proofs are recorded in `handoff.md`.
 
 ## Non-negotiable product boundary
 
