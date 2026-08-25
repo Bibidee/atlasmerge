@@ -33,7 +33,7 @@ jobs:
           mkdir -p ~/.cache/gltest-direct
           test -f ~/.cache/gltest-direct/genvm-universal-v0.3.0-rc7.tar.xz || \
             curl --fail --location --retry 3 \
-            https://github.com/genlayerlabs/genvm/releases/download/v0.3.0-rc7/genvm-universal.tar.xz \
+            https://github.com/genlayerlabs/genvm/releases/download/v0.3.0-rc7/genvm-runners-all.tar.xz \
             --output ~/.cache/gltest-direct/genvm-universal-v0.3.0-rc7.tar.xz
       - name: Install frontend dependencies
         run: npm ci
