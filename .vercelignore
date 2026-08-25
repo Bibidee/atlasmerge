@@ -1,0 +1,11 @@
+.pytest_cache
+apps/web/.pytest_cache
+artifacts
+apps/web/artifacts
+node_modules
+apps/web/node_modules
+.next
+apps/web/.next
+coverage
+*.pyc
+__pycache__

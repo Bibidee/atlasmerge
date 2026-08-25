@@ -2,19 +2,28 @@
 
 ## Current release state
 
-- Previously verified canonical contract: `0x9D15E405F3aE2A9166866131b1EEC73cd45C8C42` (deployment `0x831fe5a918fe469135613edf8e9a1c0506826170df962518a9bb0d0b4de81cc9`), now superseded pending the final hardening redeployment below.
-- Current hardening source is not yet deployed. Its SHA-256 is `61889e59e64a59d1c5d1929bb2f36cb5e4720b497758701656b88e52681eddf3`.
-- Production app: `https://atlasmerge.vercel.app`. It still points at the previously verified address until the one authorized final redeployment is complete.
-- Truthful status: source hardening and test expansion are in progress; no new production state has been manufactured.
+- Current canonical contract: `0x473b3ad60d22923aEC7f881f728641F22a4b9ED7` (deployment `0x3542da877e0e882742b1886adec76f82f0b37a412fc348cf66d3c1efc25c663e`), source SHA-256 `f3842b2062a111170d40b88874531f140e45c2167eeb8bb99cc801ec22721c9d`.
+- Previous `0x9D15E405F3aE2A9166866131b1EEC73cd45C8C42` is superseded historical evidence.
+- Production app: `https://atlasmerge.vercel.app`, aliased to Vercel deployment `dpl_7bRfogyA8o8GhHiVcELhQ6RAuqqs`.
+- Truthful status: deployment and layer/feature/cluster submission are live; adjudication is still awaiting a convergent validator result, so no ACCEPT lifecycle is claimed.
 
 > **Mandatory living log.** `AGENTS.md` requires an agent to append here immediately after every meaningful work unit, before starting the next one. This is the operational continuity file; it must describe what actually happened, not what was intended.
 
 ## Current checkpoint
 
-- **Phase:** Final release-closure hardening before one redeployment.
-- **Last completed work:** Prompt safety, verdict matrix, VecDB eligibility parity, authoritative feature IDs, Report submission locking, documentation parity, and pinned CI tooling were updated locally.
-- **Next exact action:** Run the full matrix on the frozen source, commit/push, deploy once through the authorized StudioNet wallet path, update Vercel, and repeat the positive/negative lifecycle.
-- **Known blocker:** A StudioNet wallet approval is required for the single final deployment and subsequent lifecycle transactions.
+- **Phase:** Final release-closure verification after the single hardening redeployment.
+- **Last completed work:** Prompt safety, geographic identity binding, verdict matrix, VecDB eligibility parity, authoritative feature IDs, Report submission locking, pinned CI tooling, deployment, Vercel update, and live layer/feature/cluster seed.
+- **Next exact action:** Wait for or diagnose the adjudication validator rotation, then record the authoritative decision and mutation readback; do not claim ACCEPT until finalized.
+- **Known blocker:** The live adjudication transaction has not yet reached a convergent final result.
+
+### 2026-08-25 — Final hardening deployment and live seed
+
+- Deployment finalized on StudioNet from source commit `1fcc22bd0589a4ad5e5a7947ea28ae235da5b993`; contract source SHA-256 is `f3842b2062a111170d40b88874531f140e45c2167eeb8bb99cc801ec22721c9d`.
+- Contract `0x473b3ad60d22923aEC7f881f728641F22a4b9ED7`; deployment transaction `0x3542da877e0e882742b1886adec76f82f0b37a412fc348cf66d3c1efc25c663e`; StudioNet Explorer: https://explorer-studio.genlayer.com/address/0x473b3ad60d22923aEC7f881f728641F22a4b9ED7.
+- Live seed transactions finalized Accepted/SUCCESS: create layer `0x9cecacf0c1beb3f1c4093e3689ee0adbe40500e706ec3a2abb6cdf9b3547eb8a` (layer 1), register feature `0xec03c30236470bbb3e9d88e9ec2198f1d11c2ab4d8c76487ac92689067078afd` (feature 1), submit cluster `0x092fce247e50aee4ed9f66c6f750fee880b0ba1dbb39b1c85b19964ddf460889` (cluster 1).
+- Adjudication transaction `0x1a22f47f229210cab37580e259500f124ed5310647bd0cccaede3b368bec86a0` is still cycling through validator leader rotation/majority disagreement in StudioNet; no final decision or mutation is claimed yet.
+- Frontend production deployment `dpl_7bRfogyA8o8GhHiVcELhQ6RAuqqs` is aliased at https://atlasmerge.vercel.app and its bundle contains the new address.
+- Verification: frontend 39/39, contract/direct 20/20, typecheck, lint, and production build passed locally. Hosted CI status for the newest commit remains to be checked before claiming green.
 
 ## Immediate implementation sequence
 
