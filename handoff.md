@@ -2,9 +2,9 @@
 
 ## Current release state
 
-- Current final contract source commit: `43bbc95b5413f080174824a8c53da28c2ffaef79`; contract SHA-256 `32ea5e612fc8fdc0cf5e319d21df4ab28868ae0bdc945bb554ab3cc8190c64e8`. Repository HEAD is `c2e8a11` (Vercel project alignment only; contract bytes unchanged).
+- Current final contract source commit: `43bbc95b5413f080174824a8c53da28c2ffaef79`; contract SHA-256 `32ea5e612fc8fdc0cf5e319d21df4ab28868ae0bdc945bb554ab3cc8190c64e8`. Repository HEAD is `de133e216d48779615076d27482acbcc826c6675` (frontend authoritative post-write refresh; contract bytes unchanged).
 - New deployment: `0xfBBe4AFA3F196634d7d17951914bFA0AF427a2E4`; deployment transaction `0x0fd9ba8e4126969f35f550b17f45e667072103582c059c0f93b9b021eca8d6e5`. The prior `0x56A9...` deployment is superseded historical state.
-- Production frontend deployment `dpl_89aQtVSaNqJSDvA8LEtQM7sFVG41` (`https://atlasmerge-lmtfjgjko-bibidees-projects.vercel.app`) is ready and aliased at https://atlasmerge.vercel.app; its bundle contains `0xfBBe4AFA3F196634d7d17951914bFA0AF427a2E4`. GitHub’s Vercel status for the final commit is green.
+- Production frontend deployment `dpl_4oVhxsD5nqmP5mqYf1igp2Jexhcy` (`https://atlasmerge-g8ybx0yje-bibidees-projects.vercel.app`) is ready and aliased at https://atlasmerge.vercel.app; its bundle contains `0xfBBe4AFA3F196634d7d17951914bFA0AF427a2E4`. GitHub Actions run `32858057477` for the final pushed commit is green.
 - Truthful status: the earlier StudioNet `gen_getContractCode` PostgreSQL adapter error has cleared. Read-only RPC and the candidate adjudication now succeed; the fresh positive lifecycle is proven below. A fresh digest-mismatch write still requires a separate authorized wallet transaction.
 
 > **Mandatory living log.** `AGENTS.md` requires an agent to append here immediately after every meaningful work unit, before starting the next one. This is the operational continuity file; it must describe what actually happened, not what was intended.
@@ -14,6 +14,13 @@
 - **Phase:** Final release-closure verification after the single convergence redeployment.
 - **Last completed work:** Prompt safety, geographic identity binding, canonical verdict convergence, VecDB eligibility parity, authoritative feature IDs, Report submission locking, pinned CI tooling, deployment, Vercel update, and candidate positive lifecycle.
 - **Next exact action:** Submit and adjudicate one fresh digest-mismatch cluster on the same contract from an authorized wallet, then record its no-mutation readback.
+
+### 2026-08-25 — Frontend authoritative post-write refresh
+
+- Added bounded, read-only `pollAuthoritativeState` confirmation with a hard attempt/delay bound and truthful timeout handling.
+- Create-layer now waits for an authoritative layer matching name, charter digest, and canonical bbox before refreshing and routing. Feature registration waits for feature key, geometry digest, and geohash identity. Report submission waits for the exact pending cluster identity and routes to its authoritative cluster page.
+- Adjudication now waits for a terminal cluster state and refreshes the cluster, target feature, and related semantic-memory readback together. No cancellation UI path is exposed, so cancellation remains N/A.
+- Regression coverage is now frontend `46/46`; typecheck, lint, and production build pass. GitHub Actions run `32858057477` is green. Production deployment `dpl_4oVhxsD5nqmP5mqYf1igp2Jexhcy` is READY and aliased at https://atlasmerge.vercel.app (HTTP 200; final contract address present; old candidate absent).
 
 ### 2026-08-25 — Final hosting/CI verification
 
