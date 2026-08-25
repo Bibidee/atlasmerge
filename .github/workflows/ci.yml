@@ -39,17 +39,13 @@ jobs:
         run: npm ci
         working-directory: apps/web
       - name: Frontend tests
-        run: npm run test
-        working-directory: apps/web
+        run: npm run test --workspace @atlasmerge/web
       - name: Typecheck
-        run: npm run typecheck
-        working-directory: apps/web
+        run: npm run typecheck --workspace @atlasmerge/web
       - name: Lint
-        run: npm run lint
-        working-directory: apps/web
+        run: npm run lint --workspace @atlasmerge/web
       - name: Production build
-        run: npm run build
-        working-directory: apps/web
+        run: npm run build --workspace @atlasmerge/web
       - name: Contract static validation
         run: python -m pytest tests/direct/test_contract_source.py
       # This is deliberately blocking: a green workflow must mean the suite ran.
