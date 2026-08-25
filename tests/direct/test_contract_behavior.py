@@ -83,13 +83,34 @@ def test_mocked_adjudication_accept_mutates_once_and_records_history(deployed):
     digest=contract._sha256(body)
     contract.submit_cluster(1, 1, "name", "Wole Soyinka Centre for Culture and the Creative Arts", "https://example.com/evidence", digest, "u09tun")
     vm.mock_web("example\\.com/evidence", {"method":"GET","status":200,"body":body})
-    vm.mock_llm("CONTEXT_JSON", '{"decision":"ACCEPT_DELTA","attribute":"name","value":"Wole Soyinka Centre for Culture and the Creative Arts","source_accessible":true,"feature_match":"MATCH","support":"SUPPORTED","reason_code":"DIRECT_SUPPORT","memory_ids":[]}')
+    vm.mock_llm("CONTEXT_JSON", '{"verdict":"ACCEPT"}')
     assert contract.adjudicate_cluster(1) == "ACCEPT_DELTA"
     feature=contract.get_feature(1)
     assert feature.version == 2
     assert "Wole Soyinka" in feature.attrs_json
     assert len(contract.get_feature_history(1,0,32)) == 1
     assert contract.delta_count == 1
+
+def test_canonical_verdict_derives_one_deterministic_envelope(deployed):
+    _, contract, _, _ = deployed
+    create_layer(contract); contract.register_feature(1, "tower", {"status":"OPEN"}, ZERO, "u09tun")
+    contract.submit_cluster(1, 1, "status", "CLOSED", "https://example.com/evidence", ZERO, "u09tun")
+    cluster=contract.get_cluster(1)
+    accept=contract._derive_verdict("ACCEPT", cluster, True)
+    mismatch=contract._derive_verdict("INSUFFICIENT_FEATURE_MISMATCH", cluster, True)
+    assert (accept["decision"],accept["feature_match"],accept["support"],accept["reason_code"]) == ("ACCEPT_DELTA","MATCH","SUPPORTED","DIRECT_SUPPORT")
+    assert (mismatch["decision"],mismatch["feature_match"],mismatch["support"],mismatch["reason_code"]) == ("INSUFFICIENT_EVIDENCE","MISMATCH","INSUFFICIENT","FEATURE_MISMATCH")
+    with pytest.raises(Exception, match="invalid canonical semantic verdict"):
+        contract._derive_verdict("ACCEPT_DELTA", cluster, True)
+
+def test_canonical_verdict_ignores_redundant_llm_fields_and_keeps_ids_deterministic(deployed):
+    _, contract, _, _ = deployed
+    create_layer(contract); contract.register_feature(1, "tower", {"status":"OPEN"}, ZERO, "u09tun")
+    contract.submit_cluster(1, 1, "status", "CLOSED", "https://example.com/evidence", ZERO, "u09tun")
+    cluster=contract.get_cluster(1)
+    envelope=contract._derive_verdict("ACCEPT", cluster, True)
+    envelope["memory_ids"]=[]
+    assert contract._validate_envelope(__import__("json").dumps(envelope), cluster, [])["decision"] == "ACCEPT_DELTA"
 
 @pytest.mark.parametrize("status,body,digest,reason", [(404,"","sha256:"+"0"*64,"SOURCE_UNAVAILABLE"),(200,"wrong evidence","sha256:"+"0"*64,"DIGEST_MISMATCH")])
 def test_mocked_non_accept_evidence_paths_never_mutate(deployed,status,body,digest,reason):

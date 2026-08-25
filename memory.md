@@ -23,13 +23,13 @@ a bounded canonical delta to a geographic feature: open/closed, name, access, di
 ## Current status
 
 **Phase:** StudioNet release candidate
-**Code status:** Final-closure hardening is deployed to StudioNet. Current source SHA-256 is `f3842b2062a111170d40b88874531f140e45c2167eeb8bb99cc801ec22721c9d`.
-**Current StudioNet contract:** `0x473b3ad60d22923aEC7f881f728641F22a4b9ED7` (deployment transaction `0x3542da877e0e882742b1886adec76f82f0b37a412fc348cf66d3c1efc25c663e`).
+**Code status:** Consensus-convergence hardening is implemented and locally tested; it is not yet deployed. Current source SHA-256 is `1c537aea90b15a7171d53849743e27ad7f78adff0082aa961a97ad284adf943a`.
+**Historical StudioNet contract:** `0x473b3ad60d22923aEC7f881f728641F22a4b9ED7` (deployment transaction `0x3542da877e0e882742b1886adec76f82f0b37a412fc348cf66d3c1efc25c663e`); its failed-consensus adjudication remains fail-closed historical evidence.
 **Previously verified StudioNet contract:** `0x9D15E405F3aE2A9166866131b1EEC73cd45C8C42` (deployment `0x831fe5a918fe469135613edf8e9a1c0506826170df962518a9bb0d0b4de81cc9`, source SHA-256 `5b7d17d2d103d90f5d2b5a3618fef1997b1de6e5950208d6502c61122fc6bc57`). It remains historical pending the single final redeployment.
 **Live frontend:** https://atlasmerge.vercel.app (Vercel deployment `dpl_8vgBkeMgrxJraFQ9MsyaNGksc2zY`).
 **Last durable update:** 2026-08-25
 
-The current contract enforces `MATCH` + accessible + `SUPPORTED` for acceptance, hashes exactly the evidence shown to consensus, validates exact geohash cells and geometry digests, and persists canonical consensus metadata. The final deployment has a verified accepted evidence mutation plus a digest-mismatch fail-closed proof. Exact transaction evidence is in `handoff.md`.
+The current source enforces `MATCH` + accessible + `SUPPORTED` for acceptance, hashes exactly the evidence shown to consensus, validates exact geohash cells and geometry digests, and compares only one canonical semantic verdict across validators. A fresh deployment and lifecycle replay remain required. Exact historical transaction evidence is in `handoff.md`.
 
 ## Non-negotiable product boundary
 

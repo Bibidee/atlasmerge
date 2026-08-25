@@ -2,10 +2,10 @@
 
 ## Current release state
 
-- Current canonical contract: `0x473b3ad60d22923aEC7f881f728641F22a4b9ED7` (deployment `0x3542da877e0e882742b1886adec76f82f0b37a412fc348cf66d3c1efc25c663e`), source SHA-256 `f3842b2062a111170d40b88874531f140e45c2167eeb8bb99cc801ec22721c9d`.
-- Previous `0x9D15E405F3aE2A9166866131b1EEC73cd45C8C42` is superseded historical evidence.
-- Production app: `https://atlasmerge.vercel.app`, aliased to Vercel deployment `dpl_7bRfogyA8o8GhHiVcELhQ6RAuqqs`.
-- Truthful status: deployment and layer/feature/cluster submission are live; adjudication is still awaiting a convergent validator result, so no ACCEPT lifecycle is claimed.
+- Current source for the next single redeployment is commit `1fcc22bd0589a4ad5e5a7947ea28ae235da5b993` plus the convergence changes currently being prepared; contract SHA-256 after those changes is `1c537aea90b15a7171d53849743e27ad7f78adff0082aa961a97ad284adf943a`.
+- Historical fail-closed contract: `0x473b3ad60d22923aEC7f881f728641F22a4b9ED7` (deployment `0x3542da877e0e882742b1886adec76f82f0b37a412fc348cf66d3c1efc25c663e`). Its `UNDETERMINED` adjudication is retained as evidence that broad semantic equivalence failed closed.
+- Production app remains on the historical address until the convergence source is deployed once and the frontend is updated.
+- Truthful status: convergence source is locally tested; no new deployment or ACCEPT lifecycle is claimed yet.
 
 > **Mandatory living log.** `AGENTS.md` requires an agent to append here immediately after every meaningful work unit, before starting the next one. This is the operational continuity file; it must describe what actually happened, not what was intended.
 

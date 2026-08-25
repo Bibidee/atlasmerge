@@ -3,3 +3,6 @@
 genlayer-test @ git+https://github.com/genlayerlabs/genlayer-testing-suite.git@75a5bcde75582734caaf210b9ebadab358fd45cb
 # Imported by the contract module during Direct Mode loading.
 numpy==2.3.5
+# Required by the bundled genlayer_embeddings protobuf stubs (google.protobuf).
+# v5.29.3 retains the legacy internal containers API used by the GenVM runners.
+protobuf==5.29.3

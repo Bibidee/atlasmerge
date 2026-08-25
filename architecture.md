@@ -183,7 +183,7 @@ A final record is immutable. Corrections create an explicit version/supersession
 
 Decision:
 
-> Do the bounded public reports/evidence in this cluster support the proposed canonical delta for this exact feature? Validators return ACCEPT_DELTA, REJECT_DELTA, SPLIT_CLUSTER or INSUFFICIENT_EVIDENCE plus a normalized attribute/value pair. Geometry itself is not invented by LLM; only pre-bounded geometry references may be accepted.
+> Do the bounded public reports/evidence in this cluster support the proposed canonical delta for this exact feature? Phase A reaches consensus on fetch/status/bytes/UTF-8/digest. Phase B validators return one canonical enum only: `ACCEPT`, `REJECT_CONTRADICTED`, `SPLIT_MIXED`, `INSUFFICIENT_FEATURE_MISMATCH`, or `INSUFFICIENT_SUPPORT`. The contract derives the final decision, reason, submitted attribute/value, and deterministic precedent IDs. Geometry itself is not invented by the LLM; only pre-bounded geometry references may be accepted.
 
 ### Before nondeterminism
 
@@ -197,10 +197,9 @@ Decision:
 
 ### Inside nondeterminism
 
-- independently fetch public evidence where needed;
-- interpret semantic evidence;
-- compare retrieved memories for applicability;
-- return fixed enums/bands/IDs.
+- Phase A: independently fetch public evidence, check `Response.status`, byte/text limits, UTF-8, and exact SHA-256, then consensus-agree on the bounded result;
+- Phase B: independently interpret the already agreed evidence and return only the canonical semantic enum;
+- no LLM-selected attribute/value or memory IDs.
 
 ### After nondeterminism
 

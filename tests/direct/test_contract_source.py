@@ -47,7 +47,8 @@ def test_attribute_validation_and_fail_closed_evidence_are_present():
     assert "MIN_GEOHASH=5" in code
     assert "self._validate_digest(geometry_digest)" in code
     assert "reason_code" in code
-    assert 'fields=("decision","attribute","value","source_accessible","feature_match","support","reason_code","memory_ids")' in code
+    assert "def _derive_verdict" in code
+    assert "ACCEPT_DELTA" in code
     assert "unsupported evidence cannot accept" in code
     assert "feature mismatch cannot accept" in code
     assert "MAX_EVIDENCE=6000" in code
@@ -59,7 +60,7 @@ def test_web_response_uses_genlayer_status_and_separates_evidence_consensus():
     assert "response.status_code" not in code
     assert "evidence_consensus=gl.vm.run_nondet_unsafe" in code
     assert "fetch_evidence()==leaders_res.calldata" in code
-    assert "judgment[\"source_accessible\"]=True" in code
+    assert 'return judgment.get("verdict")' in code
     assert "Phase A already independently fetched" in code
     assert "prompt % evidence" not in code
     assert "json.dumps(prompt_context" in code
@@ -76,10 +77,10 @@ def test_evidence_pipeline_contains_all_bounded_failure_guards_and_two_phases():
         "hashlib.sha256(text.encode(\"utf-8\")).hexdigest()!=expected_digest",
         "except Exception:",
         "evidence_consensus=gl.vm.run_nondet_unsafe",
-        "raw=json.dumps(gl.vm.run_nondet_unsafe(leader_fn, validator_fn))",
+        "canonical=gl.vm.run_nondet_unsafe(leader_fn, validator_fn)",
     ):
         assert marker in code
-    assert code.index("evidence_consensus=gl.vm.run_nondet_unsafe") < code.index("raw=json.dumps(gl.vm.run_nondet_unsafe(leader_fn, validator_fn))")
+    assert code.index("evidence_consensus=gl.vm.run_nondet_unsafe") < code.index("canonical=gl.vm.run_nondet_unsafe(leader_fn, validator_fn)")
 
 def test_non_accept_branches_write_only_terminal_cluster_state():
     code=source()
