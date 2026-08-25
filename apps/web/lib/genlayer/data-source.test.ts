@@ -2,78 +2,16 @@ import {beforeEach,describe,expect,it,vi} from "vitest";
 const {read}=vi.hoisted(()=>({read:vi.fn()}));
 vi.mock("./contract",()=>({contractRead:read}));
 import {getCluster,getClusterEntries,getFeature,getHistory,getLayer,getLayerFeatureEntries,getLayerFeatures,related} from "./data-source";
-
-describe("entity reads use numeric u256 calldata",()=>{
+const layer={steward:"0x4a7d76b8c4668a3426d6d54ec24b41fa87b532f5",name:"Lagos",charter_url:"https://example.test/charter",charter_digest:"sha256:"+"a".repeat(64),bbox_json:"{}",version:1,feature_count:0};
+const feature={active:true,attrs_json:'{"name":"Venue"}',coarse_geohash:"u09tun",feature_key:"venue",geometry_digest:"sha256:"+"b".repeat(64),layer_id:1,version:1};
+const cluster={submitter:"0x4a7d76b8c4668a3426d6d54ec24b41fa87b532f5",layer_id:1,feature_id:2,attribute:"name",value:"Venue",bundle_url:"https://example.test/evidence",bundle_digest:"sha256:"+"c".repeat(64),geohash:"u09tun",base_version:1,status:2,related_json:"[]",reason_code:"",rationale:""};
+describe("canonical ABI decoding at the data boundary",()=>{
   beforeEach(()=>read.mockReset());
-
-  it("/layers/1 reads Layer 1 with bigint calldata",async()=>{
-    read.mockResolvedValue({name:"Lagos"});
-    await getLayer("1");
-    expect(read).toHaveBeenCalledWith("get_layer",[1n]);
-  });
-
-  it("empty layer features read successfully",async()=>{
-    read.mockResolvedValueOnce([]).mockResolvedValueOnce([]);
-    expect(await getLayerFeatures("1")).toEqual([]);
-    read.mockReset();
-    read.mockResolvedValueOnce([]).mockResolvedValueOnce([]);
-    expect(await getLayerFeatureEntries("1")).toEqual([]);
-    expect(read).toHaveBeenCalledWith("get_layer_feature_ids",[1n,0,32]);
-  });
-
-  it("feature, cluster, history, and related reads normalize route IDs",async()=>{
-    read.mockResolvedValue({});
-    await getFeature("1");
-    expect(read).toHaveBeenLastCalledWith("get_feature",[1n]);
-    read.mockResolvedValue({});
-    await getCluster("1");
-    expect(read).toHaveBeenLastCalledWith("get_cluster",[1n]);
-    read.mockResolvedValue([]);
-    await getHistory("1");
-    expect(read).toHaveBeenLastCalledWith("get_feature_history",[1n,0,32]);
-    read.mockResolvedValue([]);
-    await related("1");
-    expect(read).toHaveBeenLastCalledWith("preview_related",[1n,8]);
-  });
-
-  it("normalizes bigint and numeric ABI fields at the data boundary",async()=>{
-    read.mockResolvedValueOnce({layer_id:2n,feature_id:3n,base_version:1n,status:2n,attribute:"category",value:"Cultural Landmark",bundle_url:"https://example.com/evidence",bundle_digest:"sha256:"+"0".repeat(64),geohash:"s14kud"});
-    const cluster=await getCluster("3");
-    expect(cluster.layer_id).toBe("2");
-    expect(cluster.feature_id).toBe("3");
-    expect(cluster.base_version).toBe("1");
-    expect(cluster.status).toBe(2);
-
-    read.mockResolvedValueOnce({layer_id:2,version:7n,feature_key:"poi"});
-    const feature=await getFeature("3");
-    expect(feature.layer_id).toBe("2");
-    expect(feature.version).toBe("7");
-
-    read.mockResolvedValueOnce({version:4n,feature_count:9, name:"Layer"});
-    const layer=await getLayer("2");
-    expect(layer.version).toBe("4");
-    expect(layer.feature_count).toBe("9");
-  });
-
-  it("normalizes entity and related IDs returned as bigint",async()=>{
-    read.mockResolvedValueOnce([{layer_id:2n,feature_id:3n,base_version:1n,status:2n}]).mockResolvedValueOnce([3n]);
-    const entries=await getClusterEntries();
-    expect(entries[0].id).toBe("3");
-    expect(entries[0].cluster.feature_id).toBe("3");
-
-    read.mockResolvedValueOnce([{delta_id:5n,distance:0.125}]);
-    const memories=await related("3");
-    expect(memories).toEqual([{delta_id:"5",distance:"0.125"}]);
-  });
-
-  it("rejects malformed numeric ABI fields instead of throwing trim errors",async()=>{
-    read.mockResolvedValue({layer_id:{bad:true},feature_id:3n,base_version:1n,status:2n});
-    await expect(getCluster("3")).rejects.toThrow("MALFORMED_RESPONSE");
-  });
-
-  it("invalid route IDs fail before RPC",async()=>{
-    await expect(getLayer("1.0")).rejects.toThrow("INVALID_ENTITY_ID");
-    await expect(getFeature("-1")).rejects.toThrow("INVALID_ENTITY_ID");
-    expect(read).not.toHaveBeenCalled();
-  });
+  it("reads Layer 1 with bigint calldata",async()=>{read.mockResolvedValue(layer);await expect(getLayer("1")).resolves.toMatchObject({name:"Lagos",feature_count:"0"});expect(read).toHaveBeenCalledWith("get_layer",[1n]);});
+  it("reads empty layer features successfully",async()=>{read.mockResolvedValueOnce([]).mockResolvedValueOnce([]);expect(await getLayerFeatures("1")).toEqual([]);read.mockReset();read.mockResolvedValueOnce([]).mockResolvedValueOnce([]);expect(await getLayerFeatureEntries("1")).toEqual([]);});
+  it("normalizes feature, cluster, history, and related route IDs",async()=>{read.mockResolvedValue(feature);await expect(getFeature("1")).resolves.toMatchObject({layer_id:"1",version:"1"});expect(read).toHaveBeenLastCalledWith("get_feature",[1n]);read.mockResolvedValue(cluster);await expect(getCluster("1")).resolves.toMatchObject({feature_id:"2",status:2});expect(read).toHaveBeenLastCalledWith("get_cluster",[1n]);read.mockResolvedValue([]);await getHistory("1");expect(read).toHaveBeenLastCalledWith("get_feature_history",[1n,0,32]);read.mockResolvedValue([]);await related("1");expect(read).toHaveBeenLastCalledWith("preview_related",[1n,8]);});
+  it("decodes production numeric and wrapper fields",async()=>{read.mockResolvedValue({...cluster,layer_id:{value:2n},feature_id:{value:3n},base_version:{value:1n},status:{value:2n},submitter:{value:cluster.submitter}});await expect(getCluster("3")).resolves.toMatchObject({layer_id:"2",feature_id:"3",base_version:"1",status:2,submitter:cluster.submitter});});
+  it("normalizes entity and related IDs returned as bigint",async()=>{read.mockResolvedValueOnce([{...cluster,layer_id:2n,feature_id:3n,base_version:1n,status:2n}]).mockResolvedValueOnce([3n]);const entries=await getClusterEntries();expect(entries[0].id).toBe("3");expect(entries[0].cluster.feature_id).toBe("3");read.mockResolvedValueOnce([{delta_id:5n,distance:0.125}]);await expect(related("3")).resolves.toEqual([{delta_id:"5",distance:"0.125"}]);});
+  it("rejects malformed ABI fields with field context",async()=>{read.mockResolvedValue({...cluster,feature_id:{bad:true}});await expect(getCluster("3")).rejects.toThrow("MALFORMED_RESPONSE: cluster.feature_id");});
+  it("invalid route IDs fail before RPC",async()=>{await expect(getLayer("1.0")).rejects.toThrow("INVALID_ENTITY_ID");await expect(getFeature("-1")).rejects.toThrow("INVALID_ENTITY_ID");expect(read).not.toHaveBeenCalled();});
 });
