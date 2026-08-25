@@ -2,9 +2,9 @@
 
 ## Current release state
 
-- Current final contract source commit: `43bbc95b5413f080174824a8c53da28c2ffaef79`; contract SHA-256 `32ea5e612fc8fdc0cf5e319d21df4ab28868ae0bdc945bb554ab3cc8190c64e8`. Repository HEAD is `e084a4d` (workspace lockfile/CI/hosting-only changes after deployment; contract bytes unchanged).
+- Current final contract source commit: `43bbc95b5413f080174824a8c53da28c2ffaef79`; contract SHA-256 `32ea5e612fc8fdc0cf5e319d21df4ab28868ae0bdc945bb554ab3cc8190c64e8`. Repository HEAD is `c2e8a11` (Vercel project alignment only; contract bytes unchanged).
 - New deployment: `0xfBBe4AFA3F196634d7d17951914bFA0AF427a2E4`; deployment transaction `0x0fd9ba8e4126969f35f550b17f45e667072103582c059c0f93b9b021eca8d6e5`. The prior `0x56A9...` deployment is superseded historical state.
-- Production frontend deployment `dpl_btonCyJhysm47tKWpq37GjWM9JsD` (`https://web-j7x13jnn6-bibidees-projects.vercel.app`) is ready and aliased at https://atlasmerge.vercel.app; its bundle contains `0xfBBe4AFA3F196634d7d17951914bFA0AF427a2E4`. The GitHub-originating `atlasmerge` project still reports a failed check because its project-level install/output settings are not aligned with this monorepo; the manually published production alias is healthy.
+- Production frontend deployment `dpl_89aQtVSaNqJSDvA8LEtQM7sFVG41` (`https://atlasmerge-lmtfjgjko-bibidees-projects.vercel.app`) is ready and aliased at https://atlasmerge.vercel.app; its bundle contains `0xfBBe4AFA3F196634d7d17951914bFA0AF427a2E4`. GitHub’s Vercel status for the final commit is green.
 - Truthful status: the earlier StudioNet `gen_getContractCode` PostgreSQL adapter error has cleared. Read-only RPC and the candidate adjudication now succeed; the fresh positive lifecycle is proven below. A fresh digest-mismatch write still requires a separate authorized wallet transaction.
 
 > **Mandatory living log.** `AGENTS.md` requires an agent to append here immediately after every meaningful work unit, before starting the next one. This is the operational continuity file; it must describe what actually happened, not what was intended.
@@ -21,6 +21,11 @@
 - GitHub Actions run `32842395836` for `e084a4d` is **PASS**: frontend tests, typecheck, lint, production build, static validation, and Direct Mode behavioral checks all passed. Local frontend `39/39`, Direct Mode behavioral `16/16`, static/source `8/8` also pass.
 - Vercel manual production deployment `dpl_btonCyJhysm47tKWpq37GjWM9JsD` completed successfully. Public alias returns HTTP 200 and deployed JavaScript embeds the candidate contract address. No claim is made that the GitHub-originating Vercel check is green.
 - Historical note: an earlier candidate adjudication poll observed the transient backend error `gen_getContractCode: psycopg2.ProgrammingError: can't adapt type 'dict'`; it cleared without source changes and is not a current blocker.
+
+### 2026-08-25 — Final GitHub → Vercel check repair
+
+- Vercel logs for `dpl_38QNfYEvCTCS2sVfJfgwN2j18KEc` showed root-project Next detection failure (`No Next.js version detected`). After declaring the workspace layout in the project settings, the next logs showed root-output deployment failure. The project was then configured with Root Directory `apps/web`, Framework `nextjs`, Install `npm ci`, Build `npm run build`, Node `22.x`, and no output override.
+- The GitHub-originating deployment for `c2e8a11` completed successfully as `dpl_JDqcBvkKGM9gea2gNWu4FezqBJGa`; after production env values were set, the verified production redeploy is `dpl_89aQtVSaNqJSDvA8LEtQM7sFVG41`. GitHub deployment status `Vercel=success`; the public alias returns HTTP 200 and its bundle contains only the final candidate address.
 
 ### 2026-08-25 — StudioNet diagnostic cleared and candidate lifecycle verified
 
