@@ -20,6 +20,7 @@
 - Corrected the Cluster detail read path to call `preview_related` with the current cluster ID, while continuing to call `get_feature` with the cluster's target feature ID. This matches the deployed ABI `preview_related(cluster_id, k)` and fixes clusters whose ID differs from their feature ID.
 - Added a regression with Cluster `7` targeting Feature `2`; it proves `get_feature(2)` and `preview_related(7,8)` are selected independently. Related-memory failure remains isolated so authoritative cluster/feature detail can still render.
 - Frontend verification after rebasing onto the accepted-delta comparison update: `53/53` tests passed; typecheck, lint, and production build passed. Contract source was not changed and remains SHA-256 `32ea5e612fc8fdc0cf5e319d21df4ab28868ae0bdc945bb554ab3cc8190c64e8`.
+- The frontend fix was published in commit `130586fd0019a5c8e0c8b0af7cbcc7fe458fb038`. GitHub-originating Vercel deployment `dpl_GQ6LGFFeiBxLuzi81K7ZZLVYxJ4R` is READY and aliased at https://atlasmerge.vercel.app; its GitHub Vercel status is green. No exact-commit GitHub Actions run had been registered when this entry was closed, so only the local checks above are claimed for that commit.
 - The optional evidence-source ranking and charter-in-adjudication suggestion was not included in this frontend correction because it changes consensus inputs/contract semantics and would require a separately reviewed contract release and redeployment.
 
 ### 2026-08-25 — Frontend authoritative post-write refresh
