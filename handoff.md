@@ -15,6 +15,13 @@
 - **Last completed work:** Prompt safety, geographic identity binding, canonical verdict convergence, VecDB eligibility parity, authoritative feature IDs, Report submission locking, pinned CI tooling, deployment, Vercel update, and candidate positive lifecycle.
 - **Next exact action:** Submit and adjudicate one fresh digest-mismatch cluster on the same contract from an authorized wallet, then record its no-mutation readback.
 
+### 2026-08-26 — Cluster detail `preview_related` ID correction
+
+- Corrected the Cluster detail read path to call `preview_related` with the current cluster ID, while continuing to call `get_feature` with the cluster's target feature ID. This matches the deployed ABI `preview_related(cluster_id, k)` and fixes clusters whose ID differs from their feature ID.
+- Added a regression with Cluster `7` targeting Feature `2`; it proves `get_feature(2)` and `preview_related(7,8)` are selected independently. Related-memory failure remains isolated so authoritative cluster/feature detail can still render.
+- Frontend verification after rebasing onto the accepted-delta comparison update: `53/53` tests passed; typecheck, lint, and production build passed. Contract source was not changed and remains SHA-256 `32ea5e612fc8fdc0cf5e319d21df4ab28868ae0bdc945bb554ab3cc8190c64e8`.
+- The optional evidence-source ranking and charter-in-adjudication suggestion was not included in this frontend correction because it changes consensus inputs/contract semantics and would require a separately reviewed contract release and redeployment.
+
 ### 2026-08-25 — Frontend authoritative post-write refresh
 
 - Added bounded, read-only `pollAuthoritativeState` confirmation with a hard attempt/delay bound and truthful timeout handling.
