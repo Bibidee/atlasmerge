@@ -15,6 +15,11 @@
 - **Last completed work:** Prompt safety, geographic identity binding, canonical verdict convergence, VecDB eligibility parity, authoritative feature IDs, Report submission locking, pinned CI tooling, deployment, Vercel update, and candidate positive lifecycle.
 - **Next exact action:** Submit and adjudicate one fresh digest-mismatch cluster on the same contract from an authorized wallet, then record its no-mutation readback.
 
+### 2026-08-26 — Reviewer response document
+
+- Added `MORE_INFORMATION.md` with the exact Cluster detail identifier correction, differing-ID regression, verification evidence, and contract immutability statement requested for the steward response.
+- This is documentation-only. No application behavior, contract source, StudioNet state, or optional consensus hardening was changed.
+
 ### 2026-08-26 — Cluster detail `preview_related` ID correction
 
 - Corrected the Cluster detail read path to call `preview_related` with the current cluster ID, while continuing to call `get_feature` with the cluster's target feature ID. This matches the deployed ABI `preview_related(cluster_id, k)` and fixes clusters whose ID differs from their feature ID.
