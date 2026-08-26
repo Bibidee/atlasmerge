@@ -40,10 +40,10 @@ This prevents a future refactor from accidentally substituting the feature ID fo
 - GitHub Actions run: [32994257878](https://github.com/Bibidee/atlasmerge/actions/runs/32994257878), successful on CI-closure commit `437cd1e56f80de609d02f5e04cb5bc871bdd4504`.
 - Production: [https://atlasmerge.vercel.app](https://atlasmerge.vercel.app), HTTP 200 with the final contract address in the public bundle.
 
-## Contract and optional suggestions
+## Optional reviewer request
 
 `contracts/atlasmerge.py` was not changed or redeployed. Its SHA-256 remains:
 
 `32ea5e612fc8fdc0cf5e319d21df4ab28868ae0bdc945bb554ab3cc8190c64e8`
 
-Evidence-source ranking/authentication and binding the charter body into adjudication were optional reviewer suggestions. They were not included because they would change consensus semantics and require a separately reviewed contract release and StudioNet redeployment.
+The reviewer also requested an optional trust improvement: authenticate or rank evidence sources and bind the layer charter into adjudication. This was explicitly presented as optional and was separate from the required Cluster detail correction completed here.

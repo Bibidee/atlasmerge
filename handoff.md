@@ -18,6 +18,7 @@
 ### 2026-08-26 — Reviewer response document
 
 - Added `MORE_INFORMATION.md` with the exact Cluster detail identifier correction, differing-ID regression, verification evidence, and contract immutability statement requested for the steward response.
+- Clarified that evidence-source ranking and charter binding were explicitly presented by the reviewer as an optional request, separate from the completed required correction.
 - This is documentation-only. No application behavior, contract source, StudioNet state, or optional consensus hardening was changed.
 
 ### 2026-08-26 — Cluster detail `preview_related` ID correction
